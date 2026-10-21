@@ -13,6 +13,8 @@ Without Numba the same functions run as plain Python (slow, for tests only).
 """
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 
 from ..demand import Economy, beta_for_nu, floors_at, make_grid, nu_value
@@ -40,6 +42,13 @@ CHECKPOINTS = np.array(
 
 
 def prepare(cfg: dict) -> dict:
+    if not HAVE_NUMBA:
+        warnings.warn("numba is not installed: the Q-learning kernel runs as plain Python and a Calvano "
+                      "session takes hours instead of seconds (pip install numba)", RuntimeWarning, stacklevel=2)
+    return _prepare(cfg)
+
+
+def _prepare(cfg: dict) -> dict:
     """Precompute grids, feasible action sets, rewards and initial Q for a configuration.
 
     Keys of cfg: n, c, a, mu, a0 (demand); m, xi, grid, upper_bound (price grid); k (memory,

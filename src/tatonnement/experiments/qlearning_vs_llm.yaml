@@ -2,6 +2,7 @@
 # frozen and paired with an LLM firm, in the spirit of Keppo et al. (2025). The Q-learner sees
 # last period's prices mapped to its 15-point grid (nearest point, ties to the lower price).
 experiment: qlearning_vs_llm
+description: "A frozen Q-learner against an LLM firm, llama3.2 3B on Ollama (free; a few minutes per session)"
 sessions: 5
 periods: 100
 seed: 20261021

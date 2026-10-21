@@ -45,22 +45,36 @@ this work. It offers:
 ```bash
 git clone <repository>        # not yet public
 cd tatonnement
-pip install -e ".[fast,analysis]"     # numba for the fast Q-learning engine, pandas/pyarrow for output
+pip install -e ".[analysis]"     # pandas/pyarrow write parquet output (CSV without them)
 ```
 
-Python 3.10 or newer. The core needs only numpy, scipy, httpx and pyyaml.
+Python 3.10 or newer. The core needs numpy, scipy, numba, httpx and pyyaml.
 
 ## Quick start
 
 ```bash
+tatonnement list                                  # the experiments shipped with the package
+
 # Calvano et al. (2020) baseline, 20 sessions, on the fast engine (a few seconds)
-tatonnement run src/tatonnement/experiments/calvano2020.yaml --sessions 20
+tatonnement run calvano2020 --sessions 20
 
 # Two LLM pricing agents with the Fish et al. structure, offline mock answers, no cost
-tatonnement run src/tatonnement/experiments/fish_style_mock.yaml
+tatonnement run fish_style_mock
 
 # What would the same experiment cost on DeepSeek? (offline; nothing is sent)
-tatonnement estimate src/tatonnement/experiments/fish_style_deepseek.yaml
+tatonnement estimate fish_style_deepseek
+```
+
+`CONFIG` can be the name of a shipped experiment or the path to your own YAML file. To start
+your own, copy one of the files in `src/tatonnement/experiments/`.
+
+The Dhanda (2026) replications run free on a local model:
+
+```bash
+ollama pull llama3.2:3b        # Ollama from https://ollama.com, about 2 GB
+ollama serve                   # in another terminal, unless the Ollama app is running
+tatonnement run dhanda_main    # Table 1: 2 conditions x 12 sessions x 30 rounds
+tatonnement run dhanda_cap     # Table 2: 10 conditions
 ```
 
 From Python:
@@ -68,7 +82,7 @@ From Python:
 ```python
 import tatonnement as tt
 
-res = tt.run("src/tatonnement/experiments/fish_style_mock.yaml", out_dir="runs")
+res = tt.run("fish_style_mock", out_dir="runs")
 print(res["conditions"][0]["sessions"][0]["delta"])
 ```
 
@@ -277,9 +291,10 @@ Each run writes `runs/<experiment>/<time>-<config hash>/`, containing:
   after a crash, replay, budget stop, format retries, rejections, and announced versus hidden
   caps.
 - `validation/calvano_1000.py` runs the 1,000-session Calvano baseline and compares it with
-  the recorded sessions of Cheng (2026). All 1,000 sessions match exactly (steps to
-  convergence, final state, last policy change, and Δ with zero difference). Mean Δ is 0.8492
-  (s.e. 0.0036), and the run takes about 100 seconds on a laptop.
+  the recorded sessions of Cheng (2026), shipped in `validation/calvano_1000_reference.csv`.
+  All 1,000 sessions match exactly (steps to convergence, final state, last policy change, and
+  Δ with zero difference). Mean Δ is 0.8492 (s.e. 0.0036), and the run takes one to two
+  minutes on a laptop.
 - Dhanda (2026) with llama3.2 3B on a local Ollama server (`dhanda_main.yaml`, `dhanda_cap.yaml`;
   12 conditions, 12 sessions each, 8,640 calls, no unusable answers). The headline result carries
   over: an announced cap becomes a focal point. Prices settle just below announced caps of

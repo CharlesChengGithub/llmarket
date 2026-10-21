@@ -7,6 +7,7 @@
 # stops long replies early, since any reply that long fails the format check anyway.
 # Free: needs `ollama pull llama3.2:3b` and a running Ollama server.
 experiment: dhanda_cap
+description: "Dhanda (2026) Table 2: announced vs hidden price caps, llama3.2 3B on Ollama (free)"
 sessions: 12
 periods: 30
 seed: 20261021

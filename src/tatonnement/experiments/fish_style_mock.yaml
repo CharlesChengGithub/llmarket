@@ -2,6 +2,7 @@
 # agents with plans and insights, 100 rounds of history, prices x 3.2 and quantities x 100 in the
 # prompt. No network, no cost. Replace provider/model to use a real model (see the other files).
 experiment: fish_style_mock
+description: "Fish et al. (2024) structure with the offline mock client (no network, no cost)"
 sessions: 3
 periods: 300
 seed: 20261021

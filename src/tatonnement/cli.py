@@ -1,9 +1,12 @@
 """Command line.
 
+  tatonnement list
   tatonnement run CONFIG [--out DIR] [--sessions N]
   tatonnement validate CONFIG
   tatonnement estimate CONFIG [--sample-sessions N] [--output-tokens N] [--json]
   tatonnement cache-export --experiment NAME --out FILE [--cache PATH] [--condition NAME]
+
+CONFIG is a YAML file or the name of a shipped experiment (see `tatonnement list`).
 """
 from __future__ import annotations
 
@@ -15,6 +18,7 @@ import sys
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="tatonnement")
     sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("list", help="list the experiments shipped with the package")
     p_run = sub.add_parser("run", help="run an experiment configuration")
     p_run.add_argument("config")
     p_run.add_argument("--out", default="runs", help="output directory (default: runs)")
@@ -41,6 +45,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     from .core import config as cfgmod
+
+    if args.command == "list":
+        for name, line in cfgmod.builtin_experiments().items():
+            print(f"{name:22s} {line}")
+        return 0
 
     if args.command == "validate":
         cfg = cfgmod.load(args.config)

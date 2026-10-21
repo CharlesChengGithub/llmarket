@@ -13,8 +13,33 @@ import yaml
 REQUIRED = ("experiment", "periods", "market", "agents")
 
 
+def builtin_experiments() -> dict[str, str]:
+    """Name -> description of every configuration shipped in tatonnement/experiments."""
+    from importlib import resources
+
+    out = {}
+    for f in sorted(resources.files("tatonnement.experiments").iterdir(), key=lambda f: f.name):
+        if f.name.endswith(".yaml"):
+            out[f.name[:-5]] = str(yaml.safe_load(f.read_text()).get("description", ""))
+    return out
+
+
+def resolve(path: str | Path) -> str:
+    """The text of a configuration: a file path, or the name of a shipped experiment."""
+    p = Path(path)
+    if p.is_file():
+        return p.read_text()
+    name = p.name[:-5] if p.name.endswith(".yaml") else p.name
+    if p.parent == Path(".") and name in builtin_experiments():
+        from importlib import resources
+
+        return resources.files("tatonnement.experiments").joinpath(f"{name}.yaml").read_text()
+    raise FileNotFoundError(f"{path}: no such file, and not a shipped experiment "
+                            f"({', '.join(builtin_experiments())})")
+
+
 def load(path: str | Path) -> dict:
-    cfg = yaml.safe_load(Path(path).read_text())
+    cfg = yaml.safe_load(resolve(path))
     validate(cfg)
     return cfg
 

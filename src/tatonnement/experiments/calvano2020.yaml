@@ -2,6 +2,7 @@
 # logit demand, 15-point grid, alpha = 0.15, beta = 4e-6, delta = 0.95, one-period memory.
 # Sessions reproduce Cheng (2026) bit for bit (seed rule: SeedSequence(20261011, (session,))).
 experiment: calvano2020
+description: "Calvano et al. (2020) baseline: two Q-learning firms (fast engine)"
 sessions: 1000
 periods: 1000000000          # upper bound; sessions stop when policies are stable
 stop_when_stable: 100000

@@ -1,6 +1,7 @@
 import pytest
 
-from tatonnement.core.config import expand, resolved_agents
+from tatonnement.cli import main
+from tatonnement.core.config import builtin_experiments, expand, load, resolved_agents
 
 BASE = dict(experiment="x", periods=3, market=dict(n=2),
             agents=[dict(type="llm", instructions="neutral"), dict(copy_of=0)])
@@ -27,3 +28,13 @@ def test_conditions_cross_sweep():
 def test_condition_names_checked(bad):
     with pytest.raises(ValueError):
         expand(dict(BASE, conditions=bad))
+
+
+def test_shipped_experiments_load_by_name(capsys):
+    names = builtin_experiments()
+    assert {"calvano2020", "dhanda_cap", "dhanda_main", "fish_style_mock"} <= set(names)
+    for name in names:
+        assert load(name)["experiment"] and load(name + ".yaml") == load(name)
+    with pytest.raises(FileNotFoundError, match="shipped experiment"):
+        load("no_such_experiment")
+    assert main(["list"]) == 0 and "calvano2020" in capsys.readouterr().out

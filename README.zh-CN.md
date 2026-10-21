@@ -31,22 +31,35 @@
 ```bash
 git clone <仓库地址>        # 尚未公开
 cd tatonnement
-pip install -e ".[fast,analysis]"     # numba 用于 Q-learning 快速引擎，pandas/pyarrow 用于输出
+pip install -e ".[analysis]"     # pandas/pyarrow 用于输出 parquet（不装就输出 CSV）
 ```
 
-需要 Python 3.10 及以上。核心依赖只有 numpy、scipy、httpx 和 pyyaml。
+需要 Python 3.10 及以上。核心依赖为 numpy、scipy、numba、httpx 和 pyyaml。
 
 ## 快速上手
 
 ```bash
+tatonnement list                                  # 列出随包提供的实验
+
 # Calvano 等（2020）基准，20 个 session，快速引擎（几秒钟）
-tatonnement run src/tatonnement/experiments/calvano2020.yaml --sessions 20
+tatonnement run calvano2020 --sessions 20
 
 # Fish 等结构的两家大模型定价主体，mock 离线回答，零费用
-tatonnement run src/tatonnement/experiments/fish_style_mock.yaml
+tatonnement run fish_style_mock
 
 # 同一实验用 DeepSeek 要花多少钱？（离线估算，不发送任何请求）
-tatonnement estimate src/tatonnement/experiments/fish_style_deepseek.yaml
+tatonnement estimate fish_style_deepseek
+```
+
+`CONFIG` 可以是随包实验的名字，也可以是自己的 YAML 文件路径。写自己的实验时，可以从 `src/tatonnement/experiments/` 里复制一个改。
+
+Dhanda（2026）的复现用本地模型，免费：
+
+```bash
+ollama pull llama3.2:3b        # 先从 https://ollama.com 安装 Ollama；模型约 2 GB
+ollama serve                   # 另开一个终端运行；已打开 Ollama App 时不需要
+tatonnement run dhanda_main    # 表 1：2 个条件 × 12 个 session × 30 期
+tatonnement run dhanda_cap     # 表 2：10 个条件
 ```
 
 在 Python 中调用：
@@ -54,7 +67,7 @@ tatonnement estimate src/tatonnement/experiments/fish_style_deepseek.yaml
 ```python
 import tatonnement as tt
 
-res = tt.run("src/tatonnement/experiments/fish_style_mock.yaml", out_dir="runs")
+res = tt.run("fish_style_mock", out_dir="runs")
 print(res["conditions"][0]["sessions"][0]["delta"])
 ```
 
@@ -133,7 +146,7 @@ print(res["conditions"][0]["sessions"][0]["delta"])
   - 两种 Q-learning 引擎逐位等价；
   - 逐位复现 Cheng（2026）的 46 个 session：基准、无记忆、成本不对称、三家、粗网格和五种底价；
   - 用 mock 跑通整条大模型管线：确定性、崩溃后续跑、重放、预算停止、格式重试、拒绝后重报、告知与不告知的上限。
-- `validation/calvano_1000.py` 跑 Calvano 基准的 1000 个 session，与 Cheng（2026）的记录逐个比较。结果：1000 个全部逐位一致，包括收敛步数、最终状态、最后一次策略变化，Δ 的差为 0。平均 Δ = 0.8492（标准误 0.0036），笔记本上约 100 秒跑完。
+- `validation/calvano_1000.py` 跑 Calvano 基准的 1000 个 session，与 Cheng（2026）的记录逐个比较（记录随仓库提供：`validation/calvano_1000_reference.csv`）。结果：1000 个全部逐位一致，包括收敛步数、最终状态、最后一次策略变化，Δ 的差为 0。平均 Δ = 0.8492（标准误 0.0036），笔记本上一两分钟跑完。
 - 用本地 Ollama 的 llama3.2 3B 复现 Dhanda（2026）（`dhanda_main.yaml`、`dhanda_cap.yaml`；12 个条件，各 12 个 session，8,640 次调用，没有不合格的回答）。主要结论复现了：告知的上限成为聚点。告知上限为 1.70、1.80、1.90 时，价格停在上限下方，分别为 1.67、1.74、1.86（论文为 1.68、1.78、1.87）；不告知的上限不改变价格。无规制时的水平没有复现：用我们重建的提示词，中性主体的价格低于 Nash（Δ = −0.86，论文 +0.11），激进主体更低（Δ = −1.75，论文 −0.49）。允许模型先推理再报价，中性水平向 Nash 靠近（Δ = −0.46），上限的结果不变。
 - 真实接口的冒烟测试（`pytest -m live -s`，手动运行）：本地 Ollama 的 llama3.2 3B（Dhanda 结构，再从缓存零调用重放），以及 DeepSeek（Fish 结构，6 次调用，预算 0.1 元）。
 
