@@ -153,6 +153,17 @@ Every provider is reached through its OpenAI-compatible `/chat/completions` endp
 Keys are read from the environment at call time. A configuration that contains a key is
 rejected, and keys never appear in caches, logs or manifests.
 
+DeepSeek models run in thinking mode by default. In that mode the provider ignores
+`temperature`, and the hidden reasoning counts against `max_tokens`, so a small `max_tokens`
+can leave the visible answer empty. To compare with work on non-reasoning models (Fish et al.
+2024, for instance), switch it off and report the choice:
+
+```yaml
+agents:
+  - {type: llm, provider: deepseek, model: deepseek-flash, prompt: fish_style,
+     extra_body: {thinking: {type: disabled}}}
+```
+
 ### Prompt packs
 
 - `fish_style` follows the five-part structure of Fish, Gonczarowski and Shorrer (2024):
@@ -190,11 +201,16 @@ Any pack can be replaced by your own templates.
 
 ### Format failures
 
-Answers are split by their template headings, and the price is the first number in the price
-section. An answer counts as unusable when:
+Answers are split by their template headings, and the price is read from the price section.
+`pick` (set in the prompt pack, or per agent) decides which number counts: `first` (the default
+for `fish_style`), `last`, or `only`. With `only`, the default for `dhanda_style`, the reply must
+be a bare number, with at most a `Price:` label, a `$` sign or a final full stop around it. Small
+models often reason aloud before answering, and the first or last number of such a reply is
+frequently the cost, a cap or the rival's price rather than the decision. Strict parsing re-asks
+instead of guessing. An answer counts as unusable when:
 
 - a field is missing;
-- the price is not a number;
+- the price is not a number, or (with `only`) other text surrounds it;
 - the price is negative;
 - the price is above ten times the monopoly price.
 
@@ -251,7 +267,9 @@ Each run writes `runs/<experiment>/<time>-<config hash>/`, containing:
   the recorded sessions of Cheng (2026). All 1,000 sessions match exactly (steps to
   convergence, final state, last policy change, and Δ with zero difference). Mean Δ is 0.8492
   (s.e. 0.0036), and the run takes about 100 seconds on a laptop.
-- Live smoke tests against real endpoints (`pytest -m live`) are being added.
+- Live smoke tests (`pytest -m live -s`, run by hand) cover a local Ollama server with
+  llama3.2 3B (Dhanda-style, then a zero-call replay from the cache) and DeepSeek (Fish-style,
+  six calls, budget 0.1 CNY).
 
 ## References
 

@@ -87,6 +87,7 @@ print(res["conditions"][0]["sessions"][0]["delta"])
 ## 大模型主体
 
 - **服务商**：deepseek、qwen（DashScope 兼容模式）、ollama（本地）、openai、openrouter、siliconflow，也可以接自定义的 OpenAI 兼容接口。密钥只从环境变量读取（例如 `DEEPSEEK_API_KEY`、`DASHSCOPE_API_KEY`）。配置文件里出现密钥会直接报错；缓存、日志和运行清单里也都不会出现密钥。
+  - DeepSeek 默认开启思考模式。这时服务商会忽略 `temperature`，隐藏的推理也计入 `max_tokens`，`max_tokens` 设小了，可见回答可能是空的。要和非推理模型的研究（例如 Fish 等，2024）比较，应关闭思考模式并在文中说明：`extra_body: {thinking: {type: disabled}}`。
 - **提示词包**
   - `fish_style`：沿用 Fish、Gonczarowski 和 Shorrer（2024）的五段结构：目标前缀、产品信息（价格天花板 = U[1.5, 2.5] × 垄断价，每个 session 抽一次）、上一期写下的计划和心得、最近 100 期市场记录、回答模板。措辞是本包自己写的，三个前缀 goal、explore、protect_profit 也不是原文，所以结果不能和原论文直接比较。要用原文，请自己把原文写成 YAML 提示词包，通过 `prompt: {file: ...}` 加载；本包不分发原文。
   - `dhanda_style`：按 Dhanda（2026）的描述重建：成本、合法价格区间 [1.0, 2.5]、竞争逻辑、最近 5 期记录、只回答一个数字。原文没有给出提示词，措辞是本包写的；论文引用的条件句原样收在 `prompts` 模块里（CC BY 4.0）。
@@ -99,7 +100,7 @@ print(res["conditions"][0]["sessions"][0]["delta"])
   - `show`：显示哪些字段；
   - `order`：先列最早还是最近的记录；
   - `own_price`：本方价格显示实际执行价还是提出价。
-- **格式错误**：回答按模板字段切分，价格取价格字段里的第一个数字。以下情况视为格式错误：缺字段、价格不是数字、价格为负、价格高于 10 倍垄断价。出错就重问，最多 `retries` 次；仍失败时，`on_failure: stop` 结束该 session（Fish 的做法），`keep_last_price` 沿用上期价格。
+- **格式错误**：回答按模板字段切分，再从价格字段里取价格。取哪个数字由 `pick` 决定（在提示词包里设，也可以对单个主体设）：`first` 取第一个数字（`fish_style` 的默认）；`last` 取最后一个；`only` 要求回答只有一个数字，最多带 `Price:`、`$` 或句末句号（`dhanda_style` 的默认）。小模型常常先写一段推理再给价格，这种回答的第一个或最后一个数字往往是成本、上限或对手价格，不是它定的价，所以严格模式宁可重问，也不猜。以下情况视为格式错误：缺字段；价格不是数字，或（`only` 模式下）数字前后还有别的文字；价格为负；价格高于 10 倍垄断价。出错就重问，最多 `retries` 次；仍失败时，`on_failure: stop` 结束该 session（Fish 的做法），`keep_last_price` 沿用上期价格。
 - **缓存**：SQLite 文件，默认 `.tatonnement/cache.sqlite`。键为"请求 + 调用坐标"，坐标包括实验、条件、种子、session、主体、期和第几次尝试。四种模式：
   - `use`（默认）：有缓存就读，没有就调用并写入；
   - `replay`：只读缓存，零费用、精确复现；
@@ -133,7 +134,7 @@ print(res["conditions"][0]["sessions"][0]["delta"])
   - 逐位复现 Cheng（2026）的 46 个 session：基准、无记忆、成本不对称、三家、粗网格和五种底价；
   - 用 mock 跑通整条大模型管线：确定性、崩溃后续跑、重放、预算停止、格式重试、拒绝后重报、告知与不告知的上限。
 - `validation/calvano_1000.py` 跑 Calvano 基准的 1000 个 session，与 Cheng（2026）的记录逐个比较。结果：1000 个全部逐位一致，包括收敛步数、最终状态、最后一次策略变化，Δ 的差为 0。平均 Δ = 0.8492（标准误 0.0036），笔记本上约 100 秒跑完。
-- 真实接口的冒烟测试（`pytest -m live`）正在补充。
+- 真实接口的冒烟测试（`pytest -m live -s`，手动运行）：本地 Ollama 的 llama3.2 3B（Dhanda 结构，再从缓存零调用重放），以及 DeepSeek（Fish 结构，6 次调用，预算 0.1 元）。
 
 ## 许可证
 
