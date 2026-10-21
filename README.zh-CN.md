@@ -62,7 +62,7 @@ print(res["conditions"][0]["sessions"][0]["delta"])
 
 配置示例见英文 README 或 `src/tatonnement/experiments/` 下的文件。
 
-`sweep` 对列出的参数取笛卡尔积，每种组合是一个条件。`tatonnement validate FILE` 只检查配置、统计条件数，不运行实验。
+`sweep` 对列出的参数取笛卡尔积，每种组合是一个条件。设计不是完整笛卡尔积时（例如"中性、激进、中性加上限"三个条件），用 `conditions` 逐个列出有名字的条件，每个条件是一组按点号路径的改动；`conditions` 和 `sweep` 同时出现时，两者交叉。`tatonnement validate FILE` 只检查配置、统计条件数，不运行实验。
 
 - **市场**（`market`）
   - logit 需求参数：`n`、`a`、`a0`、`mu`、`c`。

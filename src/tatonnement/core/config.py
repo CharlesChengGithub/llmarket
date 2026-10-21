@@ -1,4 +1,4 @@
-"""Experiment configuration: YAML loading, dotted-path overrides, sweeps and hashing."""
+"""Experiment configuration: YAML loading, dotted-path overrides, conditions, sweeps and hashing."""
 from __future__ import annotations
 
 import copy
@@ -44,19 +44,36 @@ def set_path(cfg: dict, dotted: str, value: Any) -> None:
 
 
 def expand(cfg: dict) -> list[dict]:
-    """Cartesian product of cfg['sweep'] (dotted path -> list of values); names get a suffix."""
+    """One config per condition.
+
+    cfg['conditions'] lists named conditions, each a set of dotted-path overrides
+    ({name: ..., set: {path: value}}), for designs that are not a full Cartesian product.
+    cfg['sweep'] (dotted path -> list of values) takes the Cartesian product of its values. With
+    both, every listed condition is crossed with every sweep combination. Names join with ','.
+    """
     sweep = cfg.get("sweep") or {}
-    base = {k: v for k, v in cfg.items() if k != "sweep"}
-    if not sweep:
+    listed = cfg.get("conditions") or []
+    base = {k: v for k, v in cfg.items() if k not in ("sweep", "conditions")}
+    names = [c.get("name") for c in listed]
+    if any(not isinstance(n, str) or not n or "/" in n for n in names) or len(set(names)) != len(names):
+        raise ValueError("every entry under conditions needs a unique name without '/'")
+    if not sweep and not listed:
         return [copy.deepcopy(base)]
     paths = list(sweep)
     out = []
-    for values in itertools.product(*(sweep[p] for p in paths)):
-        c = copy.deepcopy(base)
-        for p, v in zip(paths, values):
-            set_path(c, p, v)
-        c["condition"] = ",".join(f"{p.split('.')[-1]}={v}" for p, v in zip(paths, values))
-        out.append(c)
+    for entry in listed or [None]:
+        for values in itertools.product(*(sweep[p] for p in paths)):
+            c = copy.deepcopy(base)
+            parts = []
+            if entry is not None:
+                for p, v in (entry.get("set") or {}).items():
+                    set_path(c, p, copy.deepcopy(v))
+                parts.append(entry["name"])
+            for p, v in zip(paths, values):
+                set_path(c, p, v)
+            parts += [f"{p.split('.')[-1]}={v}" for p, v in zip(paths, values)]
+            c["condition"] = ",".join(parts)
+            out.append(c)
     return out
 
 

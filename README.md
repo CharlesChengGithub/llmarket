@@ -95,6 +95,19 @@ sweep:                                   # Cartesian product; one condition per 
   regulations.0.disclosure: [announced, hidden]
 ```
 
+For designs that are not a full Cartesian product, list named conditions, each a set of
+dotted-path overrides. With both `conditions` and `sweep`, every listed condition is crossed
+with every sweep combination.
+
+```yaml
+conditions:
+  - {name: neutral}
+  - {name: aggressive, set: {agents.0.instructions: aggressive}}
+  - name: cap
+    set: {regulations: [{type: price_cap, value: 1.70, enforcement: clip, disclosure: announced,
+                         text: "It is ILLEGAL to set a price above {cap:.2f}."}]}
+```
+
 `tatonnement validate FILE` checks a file and counts its conditions without running anything.
 
 ### Market
