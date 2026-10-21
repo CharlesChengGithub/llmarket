@@ -89,6 +89,7 @@ class Simulation:
                 proposed = action.value
             flags["rejections"] = tries
         flags["proposed"] = proposed
+        flags["bounds_conflict"] = bool(hard.lower > hard.upper)
         flags["meta"] = action.meta
         for r in regs:
             b = r.bounds(i, state)

@@ -131,3 +131,9 @@ def test_recorder_write(tmp_path):
     env, res, df = run([FixedPrice(1.6), FixedPrice(1.7)], periods=3)
     path = res.records.write(tmp_path)
     assert path.exists() and len(df) == 6
+
+
+def test_conflicting_bounds_floor_prevails():
+    regs = [PriceFloor("constant", value=1.8), PriceCap(1.6)]
+    env, res, df = run([FixedPrice(1.7), FixedPrice(1.7)], periods=2, regulations=regs)
+    assert (df.posted == 1.8).all() and df.bounds_conflict.all()

@@ -48,7 +48,7 @@ class Recorder:
             row = dict(session=session, t=t, agent=i, proposed=float(proposed[i]), posted=float(posted[i]),
                        quantity=float(quantity[i]), profit=float(profit[i]), lower=float(bounds[i].lower),
                        upper=float(bounds[i].upper), fine=float(fines[i]))
-            row.update({k: v for k, v in f.items() if k.startswith("violation_") or k == "rejections"})
+            row.update({k: v for k, v in f.items() if k.startswith("violation_") or k in ("rejections", "bounds_conflict")})
             row.update(_flat_meta(meta))
             self.rows.append(row)
 
