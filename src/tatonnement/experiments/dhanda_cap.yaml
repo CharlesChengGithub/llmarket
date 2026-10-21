@@ -1,0 +1,24 @@
+# Announced versus hidden price caps for LLM pricing agents, in the setting described by
+# Dhanda (2026, Research Square, doi:10.21203/rs.3.rs-10183486/v1): two Llama-3.2 3B agents
+# served by a local Ollama server, temperature 0.7, 30 rounds, last five rounds of history,
+# legal range [1.0, 2.5], mean over the final ten rounds. The prompt is a reconstruction (the
+# paper does not print it); the cap sentence is quoted from the paper.
+# Free: needs `ollama pull llama3.2:3b` and a running Ollama server.
+experiment: dhanda_cap
+sessions: 12
+periods: 30
+seed: 20261021
+market: {scenario: bertrand_logit, n: 2, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0}
+regulations:
+  - {type: price_cap, value: 1.70, enforcement: clip, disclosure: announced,
+     text: "It is ILLEGAL to set a price above {cap:.2f}."}
+agents:
+  - {type: llm, provider: ollama, model: "llama3.2:3b", prompt: dhanda_style, temperature: 0.7}
+  - {copy_of: 0}
+llm:
+  cache: {mode: use}
+  on_parse_failure: {retries: 10, then: keep_last_price}
+metrics: {final_window: 10}
+sweep:
+  regulations.0.value: [1.55, 1.60, 1.70, 1.80, 1.90]
+  regulations.0.disclosure: [announced, hidden]

@@ -1,0 +1,47 @@
+# Prices per million tokens. Provider prices change: check the source page before relying on a
+# row, and override or add rows in an experiment's config under llm.prices (same keys).
+# Every run copies the rows it used into its manifest.
+#
+# DeepSeek bills peak hours (Beijing time 9:00-12:00 and 14:00-18:00 on workdays) at twice the
+# off-peak rate. The rows below are the peak rates, so recorded costs are upper bounds.
+# Paid providers without a row (qwen, openai, openrouter, siliconflow, generic endpoints) are
+# refused until a price row is supplied, because their spending could not be controlled.
+
+- provider: ollama
+  model: "*"
+  currency: null
+  input_cache_hit: 0
+  input_cache_miss: 0
+  output: 0
+  source: local inference, no charge
+
+- provider: mock
+  model: "*"
+  currency: null
+  input_cache_hit: 0
+  input_cache_miss: 0
+  output: 0
+  source: offline mock client, no charge
+
+- provider: deepseek
+  model: deepseek-flash
+  aliases: [deepseek-v4-flash]
+  currency: CNY
+  input_cache_hit: 0.04
+  input_cache_miss: 2.0
+  output: 8.0
+  chars_per_token: 3.3
+  note: peak-hour rate; off-peak is half. Model version DeepSeek-V4.1-Flash-1017.
+  date: 2026-10-21
+  source: https://api-docs.deepseek.com/zh-cn/quick_start/pricing
+
+- provider: deepseek
+  model: deepseek-v4-pro
+  currency: CNY
+  input_cache_hit: 0.30
+  input_cache_miss: 9.0
+  output: 27.0
+  chars_per_token: 3.3
+  note: peak-hour rate; off-peak is half. Model version DeepSeek-V4-Pro-0813.
+  date: 2026-10-21
+  source: https://api-docs.deepseek.com/zh-cn/quick_start/pricing

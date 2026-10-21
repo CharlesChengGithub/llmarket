@@ -1,0 +1,19 @@
+# Fish-style duopoly with a paid model. Run `tatonnement estimate` first; spending stops at the
+# budget (checked before every call; the session ends after the current period).
+# Needs the environment variable DEEPSEEK_API_KEY.
+experiment: fish_style_deepseek
+sessions: 3
+periods: 300
+seed: 20261021
+market: {scenario: bertrand_logit, n: 2, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, units: {alpha: 3.2, beta: 100}}
+agents:
+  - {type: llm, provider: deepseek, model: deepseek-flash, prompt: fish_style, prefix: explore,
+     temperature: 1.0}
+  - {copy_of: 0}
+llm:
+  cache: {mode: use}
+  budget: {amount: 30, currency: CNY}
+  on_parse_failure: {retries: 10, then: stop}
+  concurrency: 2
+  parallel_sessions: 3
+metrics: {final_window: 50}

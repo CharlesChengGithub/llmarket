@@ -102,23 +102,39 @@ def _qlearning(spec: dict, ctx: dict):
     return QLearningPricer(core)
 
 
-def build_session(cfg: dict, session: int, cache: dict | None = None):
-    """Return (env, agents, simulation keyword arguments) for one session."""
+def build_session(cfg: dict, session: int, cache: dict | None = None, runtime: dict | None = None):
+    """Return (env, agents, simulation keyword arguments) for one session.
+
+    runtime may carry shared run-level objects, e.g. {'llm': LLMService} for all sessions of a run.
+    """
     cache = {} if cache is None else cache
     specs = resolved_agents(cfg)
     n = cfg["market"].get("n", 2)
     if len(specs) != n:
         raise ValueError(f"market has n={n} firms but {len(specs)} agents are configured")
+    if any(s.get("type") == "llm" for s in specs):
+        from . import llm_pricing  # noqa: F401  (registers the 'llm' builder)
     grid_market = all(s.get("type") == "qlearning" for s in specs)
     long_run = cfg["periods"] > 100000
     env = make_env(cfg, history_limit=1 if long_run else cfg.get("history_limit"))
-    ctx = dict(cfg=cfg, session=session, cache=cache, grid_market=grid_market)
+    ctx = dict(cfg=cfg, session=session, cache=cache, grid_market=grid_market, runtime=runtime)
     agents = []
     for i, spec in enumerate(specs):
         ctx["index"] = i
+        if spec["type"] not in AGENT_BUILDERS:
+            raise ValueError(f"unknown agent type {spec['type']!r}; known: {sorted(AGENT_BUILDERS)}")
         agents.append(AGENT_BUILDERS[spec["type"]](spec, ctx))
     sim_kwargs = dict(rng_mode=cfg.get("rng_mode", "kernel" if grid_market else "independent"),
                       stop_when_stable=cfg.get("stop_when_stable"))
+    llm_agents = [a for a in agents if hasattr(a, "projected_cost")]
+    if llm_agents:
+        ledger = llm_agents[0].service.ledger
+
+        def guard(t, agents=llm_agents, ledger=ledger):
+            return "budget_stopped" if ledger.would_exceed(sum(a.projected_cost for a in agents)) else None
+
+        sim_kwargs["before_period"] = guard
+        sim_kwargs["max_workers"] = int((cfg.get("llm") or {}).get("concurrency", len(llm_agents)))
     if grid_market and "prep" in ctx:
         sim_kwargs["initial"] = kernel_initial(ctx["prep"])
     elif "initial_prices" in cfg:

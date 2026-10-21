@@ -1,0 +1,17 @@
+# A Q-learning firm trained to convergence in self-play (Calvano et al. 2020 baseline), then
+# frozen and paired with an LLM firm, in the spirit of Keppo et al. (2025). The Q-learner sees
+# last period's prices mapped to its 15-point grid (nearest point, ties to the lower price).
+experiment: qlearning_vs_llm
+sessions: 5
+periods: 100
+seed: 20261021
+market: {scenario: bertrand_logit, n: 2, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0}
+agents:
+  - {type: qlearning, alpha: 0.15, beta: 4.0e-6, delta: 0.95, k: 1, m: 15, xi: 0.1,
+     price_map: nearest, pretrain: {mode: frozen, stable_steps: 100000}}
+  - {type: llm, provider: ollama, model: "llama3.2:3b", prompt: fish_style, prefix: goal,
+     deployment: {window: 50}}
+llm:
+  cache: {mode: use}
+  on_parse_failure: {retries: 10, then: keep_last_price}
+metrics: {final_window: 20}

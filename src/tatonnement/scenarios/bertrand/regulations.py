@@ -46,8 +46,9 @@ class PriceFloor(Regulation):
         """Floors for all firms; same arithmetic as :func:`floors_at`, with the Nash quantity
         and the current period's result cached (bounds are queried several times a period)."""
         key = (id(state.economy), state.t, state.reference_prices.tobytes())
-        if getattr(self, "_memo_key", None) == key:
-            return self._memo
+        memo = getattr(self, "_memo", None)  # one tuple, so concurrent readers never see a torn pair
+        if memo is not None and memo[0] == key:
+            return memo[1]
         e = state.economy
         if self.kind in ("b1", "b2", "lambda"):
             if getattr(self, "_qn_for", None) is not e:
@@ -59,7 +60,7 @@ class PriceFloor(Regulation):
             out = e.c + F / np.maximum(q, 1e-300)
         else:
             out = floors_at(e, state.reference_prices, self.floor_cfg(state.F))
-        self._memo_key, self._memo = key, out
+        self._memo = (key, out)
         return out
 
     def bounds(self, i, state) -> Bounds:

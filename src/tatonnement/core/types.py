@@ -81,6 +81,16 @@ class Feedback:
         return float(self.profit[self.index])
 
 
+class StopSession(Exception):
+    """Raised by an agent to end the session before the current period is recorded
+    (e.g. repeated unparsable LLM answers, or the hard budget limit)."""
+
+    def __init__(self, reason: str, detail: str = ""):
+        super().__init__(f"{reason}: {detail}" if detail else reason)
+        self.reason = reason
+        self.detail = detail
+
+
 @dataclass
 class StepResult:
     quantity: np.ndarray

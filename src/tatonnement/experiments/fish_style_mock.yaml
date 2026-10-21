@@ -1,0 +1,17 @@
+# Offline demonstration of the Fish et al. (2024) structure with the mock client: two LLM pricing
+# agents with plans and insights, 100 rounds of history, prices x 3.2 and quantities x 100 in the
+# prompt. No network, no cost. Replace provider/model to use a real model (see the other files).
+experiment: fish_style_mock
+sessions: 3
+periods: 300
+seed: 20261021
+market: {scenario: bertrand_logit, n: 2, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, units: {alpha: 3.2, beta: 100}}
+agents:
+  - {type: llm, provider: mock, model: mock, prompt: fish_style, prefix: explore, temperature: 1.0,
+     deployment: {history: raw, window: 100}}
+  - {copy_of: 0}
+llm:
+  cache: {mode: off}
+  mock: {policy: follow, noise: 0.05}
+  on_parse_failure: {retries: 10, then: stop}
+metrics: {final_window: 50}

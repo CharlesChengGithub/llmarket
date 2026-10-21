@@ -1,6 +1,7 @@
 """The period loop: observe, act, enforce regulations, step the market, give feedback, record."""
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Callable, Sequence
 
@@ -8,7 +9,7 @@ import numpy as np
 
 from .record import Recorder
 from .rng import agent_generators, kernel_seed
-from .types import Action, AgentContext, Bounds, Feedback
+from .types import Action, AgentContext, Bounds, Feedback, StopSession
 
 
 @dataclass
@@ -29,12 +30,18 @@ class Simulation:
                      index order, as the Q-learning fast path does (bit-for-bit compatibility).
     initial: previous-period action profile before t = 0, or a callable rng -> profile.
     stop_when_stable: stop once no learning agent changed its policy for this many periods.
+    before_period: called with t before each period; a returned string stops the session with
+      that reason (used by the LLM budget guard).
+    max_workers: agents with ``concurrent = True`` (LLM agents) act in parallel threads; the
+      others act first, sequentially in index order, so shared random streams keep their order.
+    An agent may raise :class:`StopSession` to end the session; the unfinished period is dropped.
     """
 
     def __init__(self, env, agents: Sequence[Any], periods: int, seed: int = 0, session: int = 0,
                  rng_mode: str = "independent", initial: np.ndarray | Callable | None = None,
                  stop_when_stable: int | None = None, recorder: Recorder | None = None,
-                 on_period: Callable[[int, dict], bool] | None = None):
+                 on_period: Callable[[int, dict], bool] | None = None,
+                 before_period: Callable[[int], str | None] | None = None, max_workers: int | None = None):
         if len(agents) != env.n_agents:
             raise ValueError("number of agents does not match the environment")
         self.env = env
@@ -47,6 +54,8 @@ class Simulation:
         self.stop_when_stable = stop_when_stable
         self.recorder = recorder if recorder is not None else Recorder()
         self.on_period = on_period
+        self.before_period = before_period
+        self.max_workers = max_workers
 
     def _rngs(self):
         n = len(self.agents)
@@ -97,7 +106,32 @@ class Simulation:
         posted = hard.clip(proposed) if np.isfinite(hard.lower) or np.isfinite(hard.upper) else proposed
         return float(posted), flags
 
+    def _decide(self, i: int, t: int, last: list) -> tuple[Action, float, dict]:
+        action = self._propose(i, t, last)
+        posted, flags = self._enforce(i, action)
+        return action, posted, flags
+
+    def _decide_all(self, t: int, last: list, pool) -> list:
+        if pool is None:
+            return [self._decide(i, t, last) for i in range(len(self.agents))]
+        out: list = [None] * len(self.agents)
+        for i in self._sequential:
+            out[i] = self._decide(i, t, last)
+        futures = {i: pool.submit(self._decide, i, t, last) for i in self._parallel}
+        for i, f in futures.items():
+            out[i] = f.result()
+        return out
+
     def run(self) -> SessionResult:
+        self._parallel = [i for i, a in enumerate(self.agents) if getattr(a, "concurrent", False)]
+        self._sequential = [i for i in range(len(self.agents)) if i not in self._parallel]
+        workers = self.max_workers if self.max_workers is not None else len(self._parallel)
+        if len(self._parallel) > 1 and workers > 1:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                return self._run(pool)
+        return self._run(None)
+
+    def _run(self, pool) -> SessionResult:
         env, agents = self.env, self.agents
         n = len(agents)
         rngs, env_rng = self._rngs()
@@ -110,12 +144,24 @@ class Simulation:
         stable = 0
         stop_reason = "max_periods"
         t = 0
+        completed = 0
         for t in range(self.periods):
+            if self.before_period is not None:
+                reason = self.before_period(t)
+                if reason:
+                    stop_reason = reason
+                    break
             bounds = [env.bounds(i) for i in range(n)]
             pre_state = env.reg_state()
-            actions = [self._propose(i, t, last) for i in range(n)]
-            posted, flags = zip(*(self._enforce(i, actions[i]) for i in range(n)))
-            posted = np.array(posted)
+            try:
+                decided = self._decide_all(t, last, pool)
+            except StopSession as stop:
+                stop_reason = stop.reason
+                self.recorder.event(session=self.session, t=t, kind="stop", reason=stop.reason, detail=stop.detail)
+                break
+            actions = [d[0] for d in decided]
+            flags = [d[2] for d in decided]
+            posted = np.array([d[1] for d in decided])
             proposed = np.array([f["proposed"] for f in flags])
             result = env.step(posted, proposed)
             fines = np.zeros(n)
@@ -133,6 +179,7 @@ class Simulation:
             last = [Action(float(proposed[i]), actions[i].meta) for i in range(n)]
             self.recorder.log_period(self.session, t, posted, proposed, result.quantity, profit,
                                      bounds, flags, fines, result.extra)
+            completed = t + 1
             learners = [a for a in agents if getattr(a, "learning", False)]
             if self.stop_when_stable is not None and learners:
                 stable = 0 if any(getattr(a, "changed", False) for a in learners) else stable + 1
@@ -142,4 +189,4 @@ class Simulation:
             if self.on_period is not None and self.on_period(t, {"posted": posted, "profit": profit}):
                 stop_reason = "callback"
                 break
-        return SessionResult(self.session, t + 1, stop_reason, self.recorder, agents)
+        return SessionResult(self.session, completed, stop_reason, self.recorder, agents)
