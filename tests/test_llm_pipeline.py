@@ -278,3 +278,23 @@ def test_shipped_example_configs_load_and_the_mock_one_runs():
     cfg["periods"] = 5
     res = tt.run(cfg, out_dir=None, sessions=1)
     assert res["status"] == "complete" and res["llm"]["live_calls"] == 10
+
+
+class _TruncatingClient(MockClient):
+    """Every second answer stops at max_tokens although it already shows a price."""
+
+    def complete(self, request, hint=None):
+        resp = super().complete(request, hint)
+        if (hint or {}).get("coords", {}).get("attempt", 0) == 0 and (hint or {})["coords"]["period"] % 2 == 0:
+            resp.finish_reason = "length"
+        return resp
+
+
+def test_truncated_answer_is_a_format_failure(tmp_path):
+    svc = LLMService(client_override=_TruncatingClient(policy="follow", noise=0.0))
+    res = run(fish_cfg(periods=6), out_dir=tmp_path, runtime={"llm": svc})
+    f = frames(res)
+    even = f[f.t % 2 == 0]
+    assert (even.meta_parse_failures == 1).all() and (f[f.t % 2 == 1].meta_parse_failures == 0).all()
+    failed = [json.loads(r["failed_responses"]) for r in texts(res) if r["t"] % 2 == 0]
+    assert all(x[0]["status"] == "truncated" and x[0]["finish_reason"] == "length" for x in failed)

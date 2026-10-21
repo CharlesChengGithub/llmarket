@@ -68,6 +68,13 @@ def test_parse_only_mode(text, value, status):
     assert (r.value, r.status) == (value, status)
 
 
+def test_inline_headings_need_exact_case():
+    prose = "The gap between my price and the rival's price: Round 6: 1.85 - 1.75. I'll set my"
+    assert parse_price(prose, ["PRICE"], "PRICE", upper=20).status == "missing_field"
+    assert parse_price("thinking... PRICE: 1.62", ["PRICE"], "PRICE", upper=20).value == 1.62
+    assert parse_price("Price: 1.35", ["PRICE"], "PRICE", upper=20).value == 1.35
+
+
 def test_parse_first_and_last():
     text = "Cost is 1.00 and the cap 1.70. My price: 1.55"
     assert parse_price(text, [], None, upper=20).value == 1.0

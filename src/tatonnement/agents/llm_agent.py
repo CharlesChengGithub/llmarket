@@ -144,9 +144,11 @@ class LLMAgent:
             tokens_out += resp.completion_tokens
             latency += resp.latency
             cached += int(resp.cached)
-            parsed = self.parse(resp.text, obs)
-            if parsed.value is None and resp.finish_reason == "length":
-                parsed.status = "truncated"  # max_tokens ran out (often in hidden reasoning) before the answer
+            if resp.finish_reason == "length":
+                # max_tokens ran out (often in hidden reasoning): the answer is unfinished, whatever it contains
+                parsed = Parsed(None, "truncated")
+            else:
+                parsed = self.parse(resp.text, obs)
             statuses.append(parsed.status)
             if parsed.value is not None:
                 if parsed.memory is not None:

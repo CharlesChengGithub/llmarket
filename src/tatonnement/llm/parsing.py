@@ -1,7 +1,8 @@
 """Parse template answers: split by field headings, read the price from the price section.
 
-A heading is a field name at the start of a line, optionally decorated with Markdown
-('**PRICE**:', '## PRICE:'), followed by a colon. When a field appears more than once (models
+A heading is a field name at the start of a line (any case), optionally decorated with Markdown
+('**PRICE**:', '## PRICE:'), followed by a colon; when no line starts with a heading, headings
+are searched inside lines, in the exact case of the template. When a field appears more than once (models
 sometimes echo the template first) the last occurrence counts. Reasoning blocks
 (<think>...</think>) are removed before parsing.
 
@@ -36,8 +37,8 @@ def split_sections(text: str, fields: Sequence[str]) -> dict[str, str]:
     names = "|".join(re.escape(f) for f in fields)
     pattern = re.compile(rf"^[ \t>#*_\-]*({names})[ \t*_]*:", re.I | re.M)
     hits = list(pattern.finditer(text))
-    if not hits:
-        pattern = re.compile(rf"\b({names})[ \t*_]*:", re.I)
+    if not hits:  # headings run together on one line; exact case only, so prose ("the rival's price: ...") never matches
+        pattern = re.compile(rf"\b({names})[ \t*_]*:")
         hits = list(pattern.finditer(text))
     out: dict[str, str] = {}
     canon = {f.lower(): f for f in fields}
