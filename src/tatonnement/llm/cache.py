@@ -42,6 +42,8 @@ _COLUMNS = ("key", "request_hash", "namespace", "condition", "seed", "session", 
 
 class Cache:
     def __init__(self, path: str | Path | None = None, mode: str = "use"):
+        if mode is False or mode is None:  # YAML 1.1 reads an unquoted `off` as false
+            mode = "off"
         if mode not in MODES:
             raise ValueError(f"cache mode must be one of {MODES}")
         self.mode = mode

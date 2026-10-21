@@ -1,0 +1,15 @@
+{
+ "sessions": 1000,
+ "identical": {
+  "steps": true,
+  "last_state": true,
+  "last_policy_change": true
+ },
+ "max_abs_delta_error": 0.0,
+ "mean_delta": 0.84921043416786,
+ "se_delta": 0.003604257568537464,
+ "paper14_mean_delta": 0.84921043416786,
+ "paper14_se_delta": 0.003604257568537464,
+ "converged_share": 1.0,
+ "wall_seconds": 101.39208858297206
+}

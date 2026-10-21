@@ -259,3 +259,18 @@ def test_cli_estimate_and_cache_export(tmp_path, capsys):
 def test_keys_in_config_are_refused(tmp_path):
     with pytest.raises(ValueError, match="environment variable"):
         run(fish_cfg(periods=2, agent=dict(api_key="sk-123")), out_dir=None)
+
+
+def test_shipped_example_configs_load_and_the_mock_one_runs():
+    import tatonnement as tt
+
+    root = Path(tt.__file__).parent / "experiments"
+    files = sorted(root.glob("*.yaml"))
+    assert {f.stem for f in files} >= {"calvano2020", "fish_style_mock", "dhanda_cap", "fish_style_deepseek",
+                                       "qlearning_vs_llm"}
+    for f in files:
+        tt.load(f)
+    cfg = tt.load(root / "fish_style_mock.yaml")
+    cfg["periods"] = 5
+    res = tt.run(cfg, out_dir=None, sessions=1)
+    assert res["status"] == "complete" and res["llm"]["live_calls"] == 10
