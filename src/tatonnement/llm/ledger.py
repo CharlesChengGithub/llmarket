@@ -90,6 +90,7 @@ class Ledger:
         self.hard_limit = None if budget is None else float(budget) * float(hard_factor)
         self.output_tokens_guess = int(output_tokens_guess)
         self.spent = 0.0
+        self.reserved = 0.0
         self.calls = 0
         self.prompt_tokens = 0
         self.cached_tokens = 0
@@ -121,24 +122,33 @@ class Ledger:
         return row.cost(int(prompt), 0, int(out))
 
     def check(self, request: ChatRequest, provider: Provider) -> float:
-        """Called before a live call; returns the estimate. Raises past the hard limit."""
+        """Called before a live call; reserves and returns the estimate (0 for free or unbudgeted
+        calls). Raises past the hard limit. The reservation is released by charge() or release()."""
         row = self.row(provider, request.model)
         est = self.estimate(request, row)
         if row.free or self.budget is None:
-            return est
+            return 0.0
         with self._lock:
-            if self.spent + est > self.hard_limit:
+            committed = self.spent + self.reserved  # calls in flight count, so parallel calls cannot overshoot
+            if committed + est > self.hard_limit:
                 self.exhausted = True
-                raise BudgetExceeded(f"spent {self.spent:.4f} + estimate {est:.4f} passes the hard limit "
-                                     f"{self.hard_limit:.4f} {self.currency or row.currency}")
-            if self.spent + est > self.budget:
+                raise BudgetExceeded(f"spent {self.spent:.4f} + in flight {self.reserved:.4f} + estimate {est:.4f} "
+                                     f"passes the hard limit {self.hard_limit:.4f} {self.currency or row.currency}")
+            if committed + est > self.budget:
                 self.exhausted = True
+            self.reserved += est
         return est
 
-    def charge(self, provider: Provider, request: ChatRequest, response: ChatResponse) -> float:
+    def release(self, reservation: float) -> None:
+        with self._lock:
+            self.reserved = max(self.reserved - reservation, 0.0)
+
+    def charge(self, provider: Provider, request: ChatRequest, response: ChatResponse,
+               reservation: float = 0.0) -> float:
         row = self.row(provider, request.model)
         cost = row.cost(response.prompt_tokens, response.cached_tokens, response.completion_tokens)
         with self._lock:
+            self.reserved = max(self.reserved - reservation, 0.0)
             self.spent += cost
             self.calls += 1
             self.prompt_tokens += response.prompt_tokens
@@ -151,7 +161,7 @@ class Ledger:
     def would_exceed(self, projected: float) -> bool:
         if self.budget is None:
             return False
-        return self.exhausted or self.spent + projected > self.budget
+        return self.exhausted or self.spent + self.reserved + projected > self.budget
 
     def summary(self) -> dict:
         return dict(spent=self.spent, currency=self.currency, budget=self.budget, live_calls=self.calls,

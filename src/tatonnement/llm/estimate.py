@@ -46,7 +46,8 @@ class EstimateLedger(Ledger):
     def check(self, request: ChatRequest, provider: Provider) -> float:
         return 0.0
 
-    def charge(self, provider: Provider, request: ChatRequest, response: ChatResponse) -> float:
+    def charge(self, provider: Provider, request: ChatRequest, response: ChatResponse,
+               reservation: float = 0.0) -> float:
         known = self.table.lookup(provider.name, request.model)
         if self.counter is not None:
             tokens = sum(self.counter(str(m.get("content", ""))) for m in request.messages)

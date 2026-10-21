@@ -133,6 +133,7 @@ class LLMAgent:
         latency = 0.0
         cached = 0
         statuses = []
+        failed: list[dict] = []
         last_resp = None
         for _attempt in range(self.retries + 1):
             msgs = self.messages(obs, retry)
@@ -144,20 +145,28 @@ class LLMAgent:
             latency += resp.latency
             cached += int(resp.cached)
             parsed = self.parse(resp.text, obs)
+            if parsed.value is None and resp.finish_reason == "length":
+                parsed.status = "truncated"  # max_tokens ran out (often in hidden reasoning) before the answer
             statuses.append(parsed.status)
             if parsed.value is not None:
                 if parsed.memory is not None:
                     self.memory = parsed.memory
                 meta = self._meta(obs, resp, msgs, statuses, failures, cost, tokens_in, tokens_out, latency, cached)
                 meta.update(parsed.detail or {})
+                if failed:
+                    meta["failed_responses"] = json.dumps(failed, ensure_ascii=False)
                 return Action(self.to_model_units(parsed.value), meta)
             failures += 1
             self.totals["parse_failures"] += 1
+            failed.append({"status": parsed.status, "finish_reason": resp.finish_reason, "text": resp.text[:4000]})
         if self.on_failure == "stop":
-            raise StopSession("parse_failure", f"agent {self.index}, period {obs.t}: {statuses}")
+            last = failed[-1]
+            raise StopSession("parse_failure", f"agent {self.index}, period {obs.t}: {statuses}; last answer "
+                                               f"(finish_reason={last['finish_reason']}), last 500 characters: {last['text'][-500:]!r}")
         self.totals["fallbacks"] += 1
         meta = self._meta(obs, last_resp, msgs, statuses, failures, cost, tokens_in, tokens_out, latency, cached)
         meta["fallback"] = True
+        meta["failed_responses"] = json.dumps(failed, ensure_ascii=False)
         return Action(self.fallback(obs), meta)
 
     def _meta(self, obs, resp, msgs, statuses, failures, cost, tin, tout, latency, cached) -> dict:

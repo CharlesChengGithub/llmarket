@@ -116,6 +116,8 @@ def test_format_retries_are_counted(tmp_path):
     res = run(fish_cfg(periods=50, mock=dict(policy="midpoint", error_rate=0.3)), out_dir=tmp_path)
     s = res["conditions"][0]["sessions"][0]
     df = frames(res)
+    failed = [json.loads(t["failed_responses"]) for t in texts(res) if "failed_responses" in t]
+    assert failed and all(f[0]["status"] == "no_number" for f in failed)
     for i in (0, 1):
         fails = s[f"agent{i}_parse_failures"]
         assert fails > 0 and s[f"agent{i}_calls"] == 50 + fails
@@ -127,6 +129,8 @@ def test_parse_failure_stops_or_keeps_last_price(tmp_path):
     stop = run(fish_cfg(periods=5, mock=dict(policy="midpoint", error_rate=1.0)), out_dir=tmp_path / "s")
     s = stop["conditions"][0]["sessions"][0]
     assert s["stop_reason"] == "parse_failure" and s["periods"] == 0 and s["agent0_calls"] == 11
+    events = (Path(stop["directory"]) / "main" / "periods_s0000_events.jsonl").read_text()
+    assert "I am not sure yet" in events  # the last unusable answer is kept for diagnosis
     keep = run(fish_cfg(periods=5, mock=dict(policy="midpoint", error_rate=1.0), agent=dict(retries=2),
                         on_parse_failure=dict(then="keep_last_price")), out_dir=tmp_path / "k")
     k = keep["conditions"][0]["sessions"][0]

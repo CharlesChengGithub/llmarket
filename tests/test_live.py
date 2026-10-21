@@ -45,7 +45,10 @@ def test_deepseek_fish_style(tmp_path):
     cfg = dict(experiment="live_deepseek", periods=3, sessions=1, seed=1,
                market=dict(MARKET, units=dict(alpha=3.2, beta=100)),
                agents=[dict(type="llm", provider="deepseek", model="deepseek-flash", prompt="fish_style",
-                            prefix="explore", max_tokens=800), dict(copy_of=0)],
+                            prefix="explore", max_tokens=800,
+                            # thinking is on by default and then ignores temperature; Fish et al. used
+                            # non-reasoning models, so switch it off
+                            extra_body={"thinking": {"type": "disabled"}}), dict(copy_of=0)],
                llm=dict(cache=dict(mode="use", path=str(tmp_path / "c.sqlite")), budget=dict(amount=0.1, currency="CNY")))
     res = tt.run(cfg, out_dir=tmp_path)
     s = res["conditions"][0]["sessions"][0]

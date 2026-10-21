@@ -157,10 +157,10 @@ def test_ledger_refuses_unknown_or_unbudgeted_paid_calls():
 def test_ledger_budget_and_hard_limit():
     led = Ledger(_paid_table(), budget=0.01, currency="CNY", hard_factor=1.5, output_tokens_guess=100)
     req = ChatRequest("paid", "m", ({"role": "user", "content": "x" * 4000},))  # ~1000 tokens -> 0.0028 est
-    led.check(req, PAID)
-    assert not led.exhausted
-    led.charge(PAID, req, ChatResponse("x", usage={"prompt_tokens": 1000, "completion_tokens": 100}))
-    assert led.spent == pytest.approx(0.0028)
+    r = led.check(req, PAID)
+    assert not led.exhausted and led.reserved == pytest.approx(0.0028)
+    led.charge(PAID, req, ChatResponse("x", usage={"prompt_tokens": 1000, "completion_tokens": 100}), r)
+    assert led.spent == pytest.approx(0.0028) and led.reserved == 0
     assert led.would_exceed(0.008) and not led.would_exceed(0.001)
     led.spent = 0.0095
     led.check(req, PAID)  # passes the budget but not the hard limit: mark exhausted, allow the call
@@ -168,6 +168,17 @@ def test_ledger_budget_and_hard_limit():
     led.spent = 0.0149
     with pytest.raises(BudgetExceeded):
         led.check(req, PAID)
+
+
+def test_ledger_reserves_calls_in_flight():
+    led = Ledger(_paid_table(), budget=0.01, currency="CNY", hard_factor=1.0, output_tokens_guess=100)
+    req = ChatRequest("paid", "m", ({"role": "user", "content": "x" * 4000},))  # estimate 0.0028
+    held = [led.check(req, PAID) for _ in range(3)]  # three parallel calls, none finished yet
+    assert led.reserved == pytest.approx(0.0084)
+    with pytest.raises(BudgetExceeded):  # a fourth would pass the limit even though nothing is spent
+        led.check(req, PAID)
+    led.release(held[0])
+    assert led.reserved == pytest.approx(0.0056)
 
 
 # -- providers and HTTP client ------------------------------------------------------------------

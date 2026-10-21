@@ -28,7 +28,9 @@ class Recorder:
     (LLM responses, memory files).
     """
 
-    def __init__(self, every: int = 1, keep: bool = True, text_fields: tuple[str, ...] = ("response", "reasoning", "memory", "prompt")):
+    TEXT_FIELDS = ("response", "reasoning", "memory", "prompt", "failed_responses")
+
+    def __init__(self, every: int = 1, keep: bool = True, text_fields: tuple[str, ...] = TEXT_FIELDS):
         self.every = max(int(every), 1)
         self.keep = keep
         self.text_fields = set(text_fields)

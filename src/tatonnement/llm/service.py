@@ -69,10 +69,14 @@ class LLMService:
             return cached
         if self.cache.mode == "replay":
             raise CacheMiss(f"no cached answer for {coords}")
-        self.ledger.check(request, provider)
+        reservation = self.ledger.check(request, provider)
         hint = dict(hint or {}, coords=coords.as_dict())
-        response = self.client(provider).complete(request, hint)
-        response.cost = self.ledger.charge(provider, request, response)
+        try:
+            response = self.client(provider).complete(request, hint)
+        except BaseException:
+            self.ledger.release(reservation)
+            raise
+        response.cost = self.ledger.charge(provider, request, response, reservation)
         with self._lock:
             self.live_calls += 1
         row = self.ledger.row(provider, request.model)
