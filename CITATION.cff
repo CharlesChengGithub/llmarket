@@ -4,6 +4,7 @@ title: "tatonnement: economics-first agent-based simulation with LLM, reinforcem
 version: 0.1.0
 license: MIT
 type: software
+repository-code: "https://github.com/CharlesChengGithub/tatonnement"
 authors:
   - family-names: Cheng
     given-names: Chao

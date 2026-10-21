@@ -9,7 +9,7 @@ can switch on and off.
 
 [中文说明](README.zh-CN.md)
 
-Status: pre-release (v0.1 in development, not yet on PyPI).
+Status: v0.1, an early release. Install from GitHub; not yet on PyPI.
 
 ## Why
 
@@ -43,7 +43,7 @@ this work. It offers:
 ## Install
 
 ```bash
-git clone <repository>        # not yet public
+git clone https://github.com/CharlesChengGithub/tatonnement.git
 cd tatonnement
 pip install -e ".[analysis]"     # pandas/pyarrow write parquet output (CSV without them)
 ```

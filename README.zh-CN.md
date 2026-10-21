@@ -6,7 +6,7 @@
 
 [English](README.md)
 
-状态：预发布（v0.1 开发中，尚未上传 PyPI）。
+状态：v0.1，早期版本。从 GitHub 安装，尚未上传 PyPI。
 
 ## 为什么做这个
 
@@ -29,7 +29,7 @@
 ## 安装
 
 ```bash
-git clone <仓库地址>        # 尚未公开
+git clone https://github.com/CharlesChengGithub/tatonnement.git
 cd tatonnement
 pip install -e ".[analysis]"     # pandas/pyarrow 用于输出 parquet（不装就输出 CSV）
 ```
