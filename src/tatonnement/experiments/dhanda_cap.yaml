@@ -2,7 +2,9 @@
 # Dhanda (2026, Research Square, doi:10.21203/rs.3.rs-10183486/v1): two Llama-3.2 3B agents
 # served by a local Ollama server, temperature 0.7, 30 rounds, last five rounds of history,
 # legal range [1.0, 2.5], mean over the final ten rounds. The prompt is a reconstruction (the
-# paper does not print it); the cap sentence is quoted from the paper.
+# paper does not print it); the cap sentence is quoted from the paper. Hidden caps are enforced
+# (clipped) but not mentioned in the prompt. The answer must be a bare number; max_tokens 32 only
+# stops long replies early, since any reply that long fails the format check anyway.
 # Free: needs `ollama pull llama3.2:3b` and a running Ollama server.
 experiment: dhanda_cap
 sessions: 12
@@ -13,11 +15,13 @@ regulations:
   - {type: price_cap, value: 1.70, enforcement: clip, disclosure: announced,
      text: "It is ILLEGAL to set a price above {cap:.2f}."}
 agents:
-  - {type: llm, provider: ollama, model: "llama3.2:3b", prompt: dhanda_style, temperature: 0.7}
+  - {type: llm, provider: ollama, model: "llama3.2:3b", prompt: dhanda_style, temperature: 0.7,
+     max_tokens: 32}
   - {copy_of: 0}
 llm:
   cache: {mode: use}
   on_parse_failure: {retries: 10, then: keep_last_price}
+  parallel_sessions: 4
 metrics: {final_window: 10}
 sweep:
   regulations.0.value: [1.55, 1.60, 1.70, 1.80, 1.90]

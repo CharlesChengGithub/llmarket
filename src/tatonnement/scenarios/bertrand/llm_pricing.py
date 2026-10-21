@@ -75,8 +75,9 @@ class PricingLLMAgent(LLMAgent):
                  deployment: Deployment | dict | None = None, prefix: str | None = None,
                  prefix_placement: str = "user", instructions: list | str | None = None,
                  ceiling_multiplier: float = 2.0, price_range: tuple | None = None, require_all_fields: bool = True,
-                 **kwargs):
+                 pick: str | None = None, **kwargs):
         self.pack = get_pack(pack)
+        self.pick = pick or self.pack.pick
         self.deployment = deployment if isinstance(deployment, Deployment) else Deployment.from_config(deployment)
         super().__init__(service, provider, model, memory_fields=tuple(self.pack.memory_fields),
                          interval=self.deployment.interval, **kwargs)
@@ -217,7 +218,7 @@ class PricingLLMAgent(LLMAgent):
 
     # -- answers ------------------------------------------------------------------------------
     def parse(self, text: str, obs) -> Parsed:
-        res = parse_price(text, self.pack.fields, self.pack.price_field, self.parse_upper)
+        res = parse_price(text, self.pack.fields, self.pack.price_field, self.parse_upper, pick=self.pick)
         if res.value is None:
             return Parsed(None, res.status)
         memory = None
@@ -279,7 +280,7 @@ def _llm(spec: dict, ctx: dict):
         prefix_placement=spec.get("prefix_placement", "user"), instructions=spec.get("instructions"),
         ceiling_multiplier=ceiling_multiplier(spec, int(cfg.get("seed", 0)), ctx["session"]),
         price_range=spec.get("price_range"), require_all_fields=bool(spec.get("require_all_fields", True)),
-        params=params, namespace=cfg["experiment"], condition=cfg.get("condition", "main"),
+        pick=spec.get("pick"), params=params, namespace=cfg["experiment"], condition=cfg.get("condition", "main"),
         seed_root=int(cfg.get("seed", 0)), retries=int(spec.get("retries", failure.get("retries", 10))),
         on_failure=spec.get("on_failure", failure.get("then", "stop")), seed=spec.get("seed", "auto"),
         record_prompt=bool(spec.get("record_prompt", (cfg.get("llm") or {}).get("record_prompts", False))),

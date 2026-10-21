@@ -28,12 +28,12 @@ def test_ollama_dhanda_style(tmp_path):
                regulations=[dict(type="price_cap", value=1.70, enforcement="clip",
                                  text="It is ILLEGAL to set a price above {cap:.2f}.")],
                agents=[dict(type="llm", provider="ollama", model=os.environ.get("TATONNEMENT_OLLAMA_MODEL", "llama3.2:3b"),
-                            prompt="dhanda_style", temperature=0.7), dict(copy_of=0)],
+                            prompt="dhanda_style", temperature=0.7, max_tokens=32), dict(copy_of=0)],
                llm=dict(cache=dict(mode="use", path=str(tmp_path / "c.sqlite")),
                         on_parse_failure=dict(retries=10, then="keep_last_price")))
     res = tt.run(cfg, out_dir=tmp_path)
     s = res["conditions"][0]["sessions"][0]
-    print(s)
+    print(s, res["llm"])
     assert res["status"] == "complete" and s["periods"] == 5
     again = tt.run(cfg, out_dir=tmp_path / "again")
     assert again["llm"]["live_calls"] == 0  # everything replayed from the cache

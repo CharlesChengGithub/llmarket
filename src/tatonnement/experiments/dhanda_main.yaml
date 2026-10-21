@@ -1,0 +1,25 @@
+# Neutral versus aggressive instructions for LLM pricing agents without regulation, in the
+# setting described by Dhanda (2026, Research Square, doi:10.21203/rs.3.rs-10183486/v1; Table 1):
+# two Llama-3.2 3B agents served by a local Ollama server, temperature 0.7, 30 rounds, last five
+# rounds of history, legal range [1.0, 2.5], mean over the final ten rounds. The prompt is a
+# reconstruction (the paper does not print it); the aggressive sentence is quoted from the paper.
+# The paper's third condition (an announced cap at 1.70) is a cell of dhanda_cap.yaml.
+# The answer must be a bare number; max_tokens 32 only stops long replies early, since any reply
+# that long fails the format check anyway.
+# Free: needs `ollama pull llama3.2:3b` and a running Ollama server.
+experiment: dhanda_main
+sessions: 12
+periods: 30
+seed: 20261021
+market: {scenario: bertrand_logit, n: 2, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0}
+agents:
+  - {type: llm, provider: ollama, model: "llama3.2:3b", prompt: dhanda_style, temperature: 0.7,
+     max_tokens: 32, instructions: neutral}
+  - {copy_of: 0}
+llm:
+  cache: {mode: use}
+  on_parse_failure: {retries: 10, then: keep_last_price}
+  parallel_sessions: 4
+metrics: {final_window: 10}
+sweep:
+  agents.0.instructions: [neutral, aggressive]

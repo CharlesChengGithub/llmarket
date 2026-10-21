@@ -59,6 +59,23 @@ def test_parse_missing_field_and_bare_number():
     assert split_sections("no headings here", FIELDS) == {}
 
 
+@pytest.mark.parametrize("text, value, status", [
+    ("1.65", 1.65, "ok"), (" **$1.65.**\n", 1.65, "ok"), ("Price: 1.65", 1.65, "ok"),
+    ("My price is 1.65.", None, "extra_text"), ("Cost is 1.00, so 1.65", None, "extra_text"),
+    ("none", None, "no_number"), ("-1", None, "negative")])
+def test_parse_only_mode(text, value, status):
+    r = parse_price(text, [], None, upper=20, pick="only")
+    assert (r.value, r.status) == (value, status)
+
+
+def test_parse_first_and_last():
+    text = "Cost is 1.00 and the cap 1.70. My price: 1.55"
+    assert parse_price(text, [], None, upper=20).value == 1.0
+    assert parse_price(text, [], None, upper=20, pick="last").value == 1.55
+    with pytest.raises(ValueError):
+        parse_price(text, [], None, upper=20, pick="middle")
+
+
 # -- requests and cache -----------------------------------------------------------------------
 def _req(content="hi", **params):
     return ChatRequest("mock", "m", ({"role": "user", "content": content},), params)

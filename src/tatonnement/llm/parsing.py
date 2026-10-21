@@ -1,9 +1,15 @@
-"""Parse template answers: split by field headings, read the price as the first number.
+"""Parse template answers: split by field headings, read the price from the price section.
 
 A heading is a field name at the start of a line, optionally decorated with Markdown
 ('**PRICE**:', '## PRICE:'), followed by a colon. When a field appears more than once (models
 sometimes echo the template first) the last occurrence counts. Reasoning blocks
 (<think>...</think>) are removed before parsing.
+
+Which number is the price: pick='first' (the first number in the section), 'last', or 'only'
+(the section must be just a number, with at most a 'Price:' label, a '$' sign, Markdown emphasis
+or a final full stop around it; anything else is the status 'extra_text'). Use 'only' for
+single-number prompts: small models often reason aloud, and the first or last number of such a
+reply is frequently the cost, a cap or a rival's price rather than the decision.
 """
 from __future__ import annotations
 
@@ -13,6 +19,8 @@ from typing import Sequence
 
 _THINK = re.compile(r"<think>.*?</think>", re.S | re.I)
 _NUMBER = re.compile(r"(?<![\w.])-?\d+(?:\.\d+)?")
+_ONLY = re.compile(r"^[\s*_`\"']*(?:price[\s*_]*[:=]?)?[\s*_`\"']*\$?\s*(-?\d+(?:\.\d+)?)[\s*_`\"'.]*$", re.I)
+PICKS = ("first", "last", "only")
 
 
 def strip_reasoning(text: str) -> str:
@@ -42,7 +50,7 @@ def split_sections(text: str, fields: Sequence[str]) -> dict[str, str]:
 @dataclass
 class ParsedPrice:
     value: float | None
-    status: str  # ok | missing_field | no_number | negative | out_of_range
+    status: str  # ok | missing_field | no_number | extra_text | negative | out_of_range
     sections: dict
 
 
@@ -57,10 +65,18 @@ def parse_price(text: str, fields: Sequence[str], price_field: str | None, upper
         section = sections[price_field]
     else:
         section = clean
+    if pick not in PICKS:
+        raise ValueError(f"pick must be one of {PICKS}, got {pick!r}")
     nums = _NUMBER.findall(section)
     if not nums:
         return ParsedPrice(None, "no_number", sections)
-    value = float(nums[0] if pick == "first" else nums[-1])
+    if pick == "only":
+        m = _ONLY.match(section)
+        if m is None:
+            return ParsedPrice(None, "extra_text", sections)
+        value = float(m.group(1))
+    else:
+        value = float(nums[0] if pick == "first" else nums[-1])
     if value < 0:
         return ParsedPrice(None, "negative", sections)
     if value > upper:

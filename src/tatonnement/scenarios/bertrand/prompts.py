@@ -20,7 +20,8 @@ dhanda_style
   cost, legal price range [1.0, 2.5], the competitive logic, the last five rounds (own price, own
   profit, rival price), and a single-number answer. The paper does not print its prompt, so the
   wording is ours; the condition sentences quoted in the paper are provided verbatim in
-  DHANDA_INSTRUCTIONS and DHANDA_CAP_TEXT.
+  DHANDA_INSTRUCTIONS and DHANDA_CAP_TEXT. The answer must be a bare number (pick='only'): a reply
+  with any reasoning around the number is re-asked rather than guessed at.
 """
 from __future__ import annotations
 
@@ -37,6 +38,7 @@ class PromptPack:
     system: str | None = None
     fields: list = field(default_factory=list)
     price_field: str | None = None
+    pick: str = "first"  # which number is the price: first | last | only (see tatonnement.llm.parsing)
     memory_fields: list = field(default_factory=list)
     memory_labels: dict = field(default_factory=dict)
     prefixes: dict = field(default_factory=dict)
@@ -123,10 +125,12 @@ DHANDA_STYLE = PromptPack(
         "{regulation}{instructions}"
         "Recent rounds:\n{history}\n"
         "{retry}"
-        "Reply with a single number: your price for round {round}."
+        "What is your price for round {round}? Reply with the number only, in the form X.XX, "
+        "with no words and no explanation."
     ),
     fields=[],
     price_field=None,
+    pick="only",
     history_style="lines",
     history_fields=("price", "profit", "rivals"),
     window=5,
