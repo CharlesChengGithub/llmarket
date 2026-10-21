@@ -1,0 +1,13 @@
+# Calvano, Calzolari, Denicolo and Pastorello (2020, AER), baseline: two Q-learning firms,
+# logit demand, 15-point grid, alpha = 0.15, beta = 4e-6, delta = 0.95, one-period memory.
+# Sessions reproduce Cheng (2026) bit for bit (seed rule: SeedSequence(20261011, (session,))).
+experiment: calvano2020
+sessions: 1000
+periods: 1000000000          # upper bound; sessions stop when policies are stable
+stop_when_stable: 100000
+seed: 20261011
+market: {scenario: bertrand_logit, n: 2, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0}
+agents:
+  - {type: qlearning, alpha: 0.15, beta: 4.0e-6, delta: 0.95, k: 1, m: 15, xi: 0.1}
+  - {copy_of: 0}
+full_analysis: true

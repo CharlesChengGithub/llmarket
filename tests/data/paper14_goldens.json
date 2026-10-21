@@ -1,0 +1,636 @@
+{
+ "source": "Cheng (2026) replication outputs",
+ "goldens": [
+  {
+   "condition": "baseline",
+   "source": "output/phase1/session_summary.parquet",
+   "config": {},
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1095125285,
+     "steps": 2185462,
+     "converged": true,
+     "last_state": 144,
+     "last_policy_change": 2085462,
+     "delta_gain": 0.8675865940474078,
+     "mean_price": 1.7764488053505592,
+     "cycle_length": 1
+    },
+    {
+     "session": 1,
+     "seed": 975503932,
+     "steps": 2690204,
+     "converged": true,
+     "last_state": 67,
+     "last_policy_change": 2590204,
+     "delta_gain": 0.4632356229574034,
+     "mean_price": 1.6311456506761215,
+     "cycle_length": 4
+    },
+    {
+     "session": 2,
+     "seed": 3647788826,
+     "steps": 2050106,
+     "converged": true,
+     "last_state": 192,
+     "last_policy_change": 1950106,
+     "delta_gain": 0.8224240262103718,
+     "mean_price": 1.7958225593071508,
+     "cycle_length": 4
+    },
+    {
+     "session": 3,
+     "seed": 2081790035,
+     "steps": 1924576,
+     "converged": true,
+     "last_state": 126,
+     "last_policy_change": 1824576,
+     "delta_gain": 0.6381165519309275,
+     "mean_price": 1.6795800355676007,
+     "cycle_length": 2
+    },
+    {
+     "session": 4,
+     "seed": 3547934149,
+     "steps": 1790932,
+     "converged": true,
+     "last_state": 192,
+     "last_policy_change": 1690932,
+     "delta_gain": 0.993420403750916,
+     "mean_price": 1.8926913290901093,
+     "cycle_length": 1
+    },
+    {
+     "session": 5,
+     "seed": 3528936902,
+     "steps": 1875015,
+     "converged": true,
+     "last_state": 111,
+     "last_policy_change": 1775015,
+     "delta_gain": 0.6538149361766092,
+     "mean_price": 1.6795800355676007,
+     "cycle_length": 1
+    },
+    {
+     "session": 6,
+     "seed": 1745541742,
+     "steps": 1491346,
+     "converged": true,
+     "last_state": 209,
+     "last_policy_change": 1391346,
+     "delta_gain": 0.9920811805019005,
+     "mean_price": 1.9411257139815885,
+     "cycle_length": 2
+    },
+    {
+     "session": 7,
+     "seed": 2893028520,
+     "steps": 1647754,
+     "converged": true,
+     "last_state": 160,
+     "last_policy_change": 1547754,
+     "delta_gain": 0.9262500294506305,
+     "mean_price": 1.8151963132637425,
+     "cycle_length": 1
+    },
+    {
+     "session": 8,
+     "seed": 4148370548,
+     "steps": 1641114,
+     "converged": true,
+     "last_state": 123,
+     "last_policy_change": 1541114,
+     "delta_gain": 0.9802709982858987,
+     "mean_price": 1.8733175751335176,
+     "cycle_length": 1
+    },
+    {
+     "session": 9,
+     "seed": 1931136202,
+     "steps": 2480688,
+     "converged": true,
+     "last_state": 127,
+     "last_policy_change": 2380688,
+     "delta_gain": 0.7474845243612057,
+     "mean_price": 1.718327543480784,
+     "cycle_length": 1
+    },
+    {
+     "session": 10,
+     "seed": 2857682116,
+     "steps": 2177887,
+     "converged": true,
+     "last_state": 156,
+     "last_policy_change": 2077887,
+     "delta_gain": 0.7626657171733797,
+     "mean_price": 1.750617133408437,
+     "cycle_length": 3
+    },
+    {
+     "session": 11,
+     "seed": 580223860,
+     "steps": 1593381,
+     "converged": true,
+     "last_state": 146,
+     "last_policy_change": 1493381,
+     "delta_gain": 0.8817272911097807,
+     "mean_price": 1.7958225593071508,
+     "cycle_length": 2
+    },
+    {
+     "session": 12,
+     "seed": 1661539912,
+     "steps": 2104148,
+     "converged": true,
+     "last_state": 175,
+     "last_policy_change": 2004148,
+     "delta_gain": 0.9461214306444966,
+     "mean_price": 1.8345700672203342,
+     "cycle_length": 1
+    },
+    {
+     "session": 13,
+     "seed": 2789437040,
+     "steps": 2635460,
+     "converged": true,
+     "last_state": 82,
+     "last_policy_change": 2535460,
+     "delta_gain": 0.5485703230883738,
+     "mean_price": 1.647290445639948,
+     "cycle_length": 3
+    },
+    {
+     "session": 14,
+     "seed": 4201338670,
+     "steps": 1477580,
+     "converged": true,
+     "last_state": 162,
+     "last_policy_change": 1377580,
+     "delta_gain": 0.874874838383856,
+     "mean_price": 1.7958225593071508,
+     "cycle_length": 2
+    },
+    {
+     "session": 15,
+     "seed": 2347808696,
+     "steps": 1561662,
+     "converged": true,
+     "last_state": 178,
+     "last_policy_change": 1461662,
+     "delta_gain": 0.9461214306444966,
+     "mean_price": 1.8345700672203342,
+     "cycle_length": 1
+    },
+    {
+     "session": 16,
+     "seed": 2817592911,
+     "steps": 1598018,
+     "converged": true,
+     "last_state": 113,
+     "last_policy_change": 1498018,
+     "delta_gain": 0.7474845243612057,
+     "mean_price": 1.718327543480784,
+     "cycle_length": 1
+    },
+    {
+     "session": 17,
+     "seed": 3629668324,
+     "steps": 2061264,
+     "converged": true,
+     "last_state": 175,
+     "last_policy_change": 1961264,
+     "delta_gain": 0.9461214306444966,
+     "mean_price": 1.8345700672203342,
+     "cycle_length": 1
+    },
+    {
+     "session": 18,
+     "seed": 167333171,
+     "steps": 1685439,
+     "converged": true,
+     "last_state": 175,
+     "last_policy_change": 1585439,
+     "delta_gain": 0.9461214306444966,
+     "mean_price": 1.8345700672203342,
+     "cycle_length": 1
+    },
+    {
+     "session": 19,
+     "seed": 2483335562,
+     "steps": 1745895,
+     "converged": true,
+     "last_state": 128,
+     "last_policy_change": 1645895,
+     "delta_gain": 0.7939632815128831,
+     "mean_price": 1.7377012974373758,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "memoryless",
+   "source": "output/phase1/session_summary.parquet",
+   "config": {
+    "k": 0,
+    "delta": 0,
+    "alpha": 0.25,
+    "beta": 0.0001
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1095125285,
+     "steps": 165548,
+     "converged": true,
+     "last_state": 0,
+     "last_policy_change": 65548,
+     "delta_gain": 0.04130474137875603,
+     "mean_price": 1.4858424960016838,
+     "cycle_length": 1
+    },
+    {
+     "session": 1,
+     "seed": 975503932,
+     "steps": 169556,
+     "converged": true,
+     "last_state": 0,
+     "last_policy_change": 69556,
+     "delta_gain": 0.37835096999896495,
+     "mean_price": 1.5827112657846423,
+     "cycle_length": 1
+    },
+    {
+     "session": 2,
+     "seed": 3647788826,
+     "steps": 173062,
+     "converged": true,
+     "last_state": 0,
+     "last_policy_change": 73062,
+     "delta_gain": 0.04130474137875603,
+     "mean_price": 1.4858424960016838,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "cost_050",
+   "source": "output/phase1/session_summary.parquet",
+   "config": {
+    "c": [
+     1,
+     0.5
+    ]
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1095125285,
+     "steps": 1503081,
+     "converged": true,
+     "last_state": 142,
+     "last_policy_change": 1403081,
+     "delta_gain": 0.8914873996907302,
+     "mean_price": 1.78634142908791,
+     "cycle_length": 1
+    },
+    {
+     "session": 1,
+     "seed": 975503932,
+     "steps": 2059787,
+     "converged": true,
+     "last_state": 159,
+     "last_policy_change": 1959787,
+     "delta_gain": 0.8056568181379836,
+     "mean_price": 1.978162956452798,
+     "cycle_length": 2
+    },
+    {
+     "session": 2,
+     "seed": 3647788826,
+     "steps": 1741125,
+     "converged": true,
+     "last_state": 127,
+     "last_policy_change": 1641125,
+     "delta_gain": 0.8006455738755177,
+     "mean_price": 1.743714423006824,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "n3",
+   "source": "output/phase1/session_summary.parquet",
+   "config": {
+    "n": 3
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1095125285,
+     "steps": 2926019,
+     "converged": true,
+     "last_state": 3131,
+     "last_policy_change": 2826019,
+     "delta_gain": 0.5834890746532159,
+     "mean_price": 1.6738342705739424,
+     "cycle_length": 8
+    },
+    {
+     "session": 1,
+     "seed": 975503932,
+     "steps": 2925088,
+     "converged": true,
+     "last_state": 1687,
+     "last_policy_change": 2825088,
+     "delta_gain": 0.6813548117143134,
+     "mean_price": 1.6850813646920821,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "low15",
+   "source": "output/phase1/session_summary.parquet",
+   "config": {
+    "grid": "low15"
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1095125285,
+     "steps": 1531597,
+     "converged": true,
+     "last_state": 144,
+     "last_policy_change": 1431597,
+     "delta_gain": 0.4936598456760419,
+     "mean_price": 1.6201197931605917,
+     "cycle_length": 1
+    },
+    {
+     "session": 1,
+     "seed": 975503932,
+     "steps": 1789395,
+     "converged": true,
+     "last_state": 144,
+     "last_policy_change": 1689395,
+     "delta_gain": 0.4936598456760419,
+     "mean_price": 1.6201197931605917,
+     "cycle_length": 1
+    },
+    {
+     "session": 2,
+     "seed": 3647788826,
+     "steps": 1483969,
+     "converged": true,
+     "last_state": 159,
+     "last_policy_change": 1383969,
+     "delta_gain": 0.577595087770732,
+     "mean_price": 1.6551264483361803,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "B_cost_fixed",
+   "source": "output/phase2/BC_session_summary.parquet",
+   "config": {
+    "grid": "wide",
+    "floor": {
+     "type": "own_variable"
+    },
+    "beta_rule": "fixed"
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1422994409,
+     "steps": 1679615,
+     "converged": true,
+     "last_state": 538,
+     "last_policy_change": 1579615,
+     "delta_gain": 0.5138081142802037,
+     "mean_price": 1.6408325276544173,
+     "cycle_length": 2
+    },
+    {
+     "session": 1,
+     "seed": 2230518673,
+     "steps": 1818010,
+     "converged": true,
+     "last_state": 459,
+     "last_policy_change": 1718010,
+     "delta_gain": 0.607563774456586,
+     "mean_price": 1.660206281611009,
+     "cycle_length": 1
+    },
+    {
+     "session": 2,
+     "seed": 267123350,
+     "steps": 1566559,
+     "converged": true,
+     "last_state": 352,
+     "last_policy_change": 1466559,
+     "delta_gain": 0.4428698266929418,
+     "mean_price": 1.6117718967195298,
+     "cycle_length": 2
+    }
+   ]
+  },
+  {
+   "condition": "B_floor1.12_nu",
+   "source": "output/phase2/BC_session_summary.parquet",
+   "config": {
+    "grid": "wide",
+    "floor": {
+     "type": "constant",
+     "value": 1.1177411708264418
+    },
+    "beta_rule": "nu"
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1422994409,
+     "steps": 4951869,
+     "converged": true,
+     "last_state": 336,
+     "last_policy_change": 4851869,
+     "delta_gain": 0.49295737222777525,
+     "mean_price": 1.6214587736978257,
+     "cycle_length": 2
+    },
+    {
+     "session": 1,
+     "seed": 2230518673,
+     "steps": 5350330,
+     "converged": true,
+     "last_state": 312,
+     "last_policy_change": 5250330,
+     "delta_gain": 0.497633248750602,
+     "mean_price": 1.6214587736978257,
+     "cycle_length": 1
+    },
+    {
+     "session": 2,
+     "seed": 267123350,
+     "steps": 5022797,
+     "converged": true,
+     "last_state": 361,
+     "last_policy_change": 4922797,
+     "delta_gain": 0.7474845243612057,
+     "mean_price": 1.718327543480784,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "C_b1_grid4",
+   "source": "output/phase2/BC_session_summary.parquet",
+   "config": {
+    "grid": "wide",
+    "beta_rule": "fixed",
+    "beta": 9.622777683940684e-06,
+    "floor": {
+     "type": "b1",
+     "F": 0.26627198468998864
+    },
+    "beta_effective_m": 11
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1422994409,
+     "steps": 1139052,
+     "converged": true,
+     "last_state": 672,
+     "last_policy_change": 1039052,
+     "delta_gain": 0.4976332487506025,
+     "mean_price": 1.6214587736978257,
+     "cycle_length": 1
+    },
+    {
+     "session": 1,
+     "seed": 2230518673,
+     "steps": 984111,
+     "converged": true,
+     "last_state": 952,
+     "last_policy_change": 884111,
+     "delta_gain": 0.7100606940024188,
+     "mean_price": 1.8151963132637425,
+     "cycle_length": 1
+    },
+    {
+     "session": 2,
+     "seed": 267123350,
+     "steps": 1009239,
+     "converged": true,
+     "last_state": 712,
+     "last_policy_change": 909239,
+     "delta_gain": 0.7100606940024188,
+     "mean_price": 1.8151963132637425,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "C_b2_grid4",
+   "source": "output/phase2/BC_session_summary.parquet",
+   "config": {
+    "grid": "wide",
+    "beta_rule": "fixed",
+    "beta": 9.622777683940684e-06,
+    "floor": {
+     "type": "b2",
+     "F": 0.27467657719946564
+    },
+    "beta_effective_m": 11
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1422994409,
+     "steps": 1237757,
+     "converged": true,
+     "last_state": 957,
+     "last_policy_change": 1137757,
+     "delta_gain": 0.9792663520044699,
+     "mean_price": 1.9023782060684051,
+     "cycle_length": 2
+    },
+    {
+     "session": 1,
+     "seed": 2230518673,
+     "steps": 1219131,
+     "converged": true,
+     "last_state": 737,
+     "last_policy_change": 1119131,
+     "delta_gain": 0.7707239029370448,
+     "mean_price": 1.72801442045908,
+     "cycle_length": 2
+    },
+    {
+     "session": 2,
+     "seed": 267123350,
+     "steps": 1106522,
+     "converged": true,
+     "last_state": 801,
+     "last_policy_change": 1006522,
+     "delta_gain": 0.8950592933987114,
+     "mean_price": 1.7958225593071508,
+     "cycle_length": 1
+    }
+   ]
+  },
+  {
+   "condition": "C_lambda_0.50",
+   "source": "output/phase2/BC_session_summary.parquet",
+   "config": {
+    "grid": "wide",
+    "beta_rule": "fixed",
+    "beta": 1.6797164623017853e-05,
+    "floor": {
+     "type": "lambda",
+     "lambda": 0.5,
+     "F": 0.29253147445772076
+    },
+    "beta_effective_m": 9
+   },
+   "sessions": [
+    {
+     "session": 0,
+     "seed": 1422994409,
+     "steps": 585657,
+     "converged": true,
+     "last_state": 952,
+     "last_policy_change": 485657,
+     "delta_gain": 0.7100606940024182,
+     "mean_price": 1.8151963132637425,
+     "cycle_length": 1
+    },
+    {
+     "session": 1,
+     "seed": 2230518673,
+     "steps": 685888,
+     "converged": true,
+     "last_state": 952,
+     "last_policy_change": 585888,
+     "delta_gain": 0.7100606940024182,
+     "mean_price": 1.8151963132637425,
+     "cycle_length": 1
+    },
+    {
+     "session": 2,
+     "seed": 267123350,
+     "steps": 624407,
+     "converged": true,
+     "last_state": 952,
+     "last_policy_change": 524407,
+     "delta_gain": 0.7100606940024182,
+     "mean_price": 1.8151963132637425,
+     "cycle_length": 1
+    }
+   ]
+  }
+ ]
+}
