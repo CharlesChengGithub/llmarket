@@ -280,6 +280,14 @@ Each run writes `runs/<experiment>/<time>-<config hash>/`, containing:
   the recorded sessions of Cheng (2026). All 1,000 sessions match exactly (steps to
   convergence, final state, last policy change, and Δ with zero difference). Mean Δ is 0.8492
   (s.e. 0.0036), and the run takes about 100 seconds on a laptop.
+- Dhanda (2026) with llama3.2 3B on a local Ollama server (`dhanda_main.yaml`, `dhanda_cap.yaml`;
+  12 conditions, 12 sessions each, 8,640 calls, no unusable answers). The headline result carries
+  over: an announced cap becomes a focal point. Prices settle just below announced caps of
+  1.70, 1.80 and 1.90 (1.67, 1.74 and 1.86, against 1.68, 1.78 and 1.87 in the paper), and hidden
+  caps leave prices where they are without a cap. The unregulated level does not: with our
+  reconstructed prompt, neutral agents price below Nash (Δ = −0.86, against +0.11), and
+  aggressive agents go further (Δ = −1.75, against −0.49). Letting the model reason before it
+  answers moves the neutral level towards Nash (Δ = −0.46) and leaves the cap result unchanged.
 - Live smoke tests (`pytest -m live -s`, run by hand) cover a local Ollama server with
   llama3.2 3B (Dhanda-style, then a zero-call replay from the cache) and DeepSeek (Fish-style,
   six calls, budget 0.1 CNY).
