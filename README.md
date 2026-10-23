@@ -303,6 +303,16 @@ Each run writes `runs/<experiment>/<time>-<config hash>/`, containing:
   reconstructed prompt, neutral agents price below Nash (Δ = −0.86, against +0.11), and
   aggressive agents go further (Δ = −1.75, against −0.49). Letting the model reason before it
   answers moves the neutral level towards Nash (Δ = −0.46) and leaves the cap result unchanged.
+- Fish-style pricing on DeepSeek (`fish_style_deepseek`: deepseek-flash with thinking off, the
+  `explore` prefix, 3 sessions of 300 periods; 1,800 calls, every answer usable, 19.79 CNY at
+  peak-hour rates, 16 minutes). This is a demonstration, not a replication: one model and three
+  sessions. The sessions part ways. In one, the two firms climb to about 5.73 and hold there
+  (Δ = 0.89 over the last 50 periods; in the units the agents see, Nash is 4.71 and monopoly
+  6.16). In the other two, prices settle near 4.5, a little below Nash (Δ = −0.21 and −0.28). In
+  one of these the agents match each other at 4.54 and write that they are defending the
+  equilibrium against a price war; in the other they keep undercutting each other by a few
+  cents. Answers averaged 375 output tokens, so the default estimate (27.6 CNY at 1,000 tokens
+  per answer) was an upper bound.
 - Live smoke tests (`pytest -m live -s`, run by hand) cover a local Ollama server with
   llama3.2 3B (Dhanda-style, then a zero-call replay from the cache) and DeepSeek (Fish-style,
   six calls, budget 0.1 CNY).

@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-23)
 
 First public release. One scenario, algorithmic pricing in a repeated Bertrand market with
 logit demand.
@@ -20,4 +20,4 @@ logit demand.
   (`tatonnement list`); parquet and JSONL outputs with a manifest.
 - **Validation.** 46 sessions of Cheng (2026) reproduced bit for bit in the test suite; the
   1,000-session Calvano baseline matches exactly; a replication of Dhanda (2026) on a local
-  llama3.2 3B model.
+  llama3.2 3B model; a Fish-style demonstration on DeepSeek (three sessions).
