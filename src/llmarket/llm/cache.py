@@ -21,7 +21,7 @@ from pathlib import Path
 from .types import CallCoords, ChatRequest, ChatResponse
 
 MODES = ("off", "use", "replay", "refresh")
-DEFAULT_PATH = Path(".tatonnement") / "cache.sqlite"
+DEFAULT_PATH = Path(".llmarket") / "cache.sqlite"
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS calls (

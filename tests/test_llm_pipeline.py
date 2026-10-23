@@ -7,10 +7,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from tatonnement.core.experiment import run
-from tatonnement.llm.mock import MockClient
-from tatonnement.llm.service import LLMService
-from tatonnement.llm.types import UnknownPrice
+from llmarket.core.experiment import run
+from llmarket.llm.mock import MockClient
+from llmarket.llm.service import LLMService
+from llmarket.llm.types import UnknownPrice
 
 MARKET = dict(n=2, a=2.0, mu=0.25, c=1.0, a0=0.0)
 
@@ -183,7 +183,7 @@ def test_mixed_market_frozen_qlearning_vs_llm(tmp_path):
     res = run(cfg, out_dir=tmp_path)
     df = frames(res)
     assert res["conditions"][0]["sessions"][0]["periods"] == 30
-    from tatonnement.scenarios.bertrand.demand import Economy, standard_grid
+    from llmarket.scenarios.bertrand.demand import Economy, standard_grid
 
     grid = standard_grid(Economy.from_config(MARKET))[0]
     q = df[df.agent == 0].posted.to_numpy()
@@ -209,10 +209,10 @@ def test_interval_and_summary_history(tmp_path):
 
 
 def test_seed_auto_and_prefix_in_system():
-    from tatonnement.core.types import AgentContext
-    from tatonnement.scenarios.bertrand.demand import Economy
-    from tatonnement.scenarios.bertrand.env import BertrandEnv
-    from tatonnement.scenarios.bertrand.llm_pricing import PricingLLMAgent
+    from llmarket.core.types import AgentContext
+    from llmarket.scenarios.bertrand.demand import Economy
+    from llmarket.scenarios.bertrand.env import BertrandEnv
+    from llmarket.scenarios.bertrand.llm_pricing import PricingLLMAgent
 
     env = BertrandEnv(Economy.from_config(MARKET))
     svc = LLMService()
@@ -229,7 +229,7 @@ def test_seed_auto_and_prefix_in_system():
 
 
 def test_estimate_prices_every_prompt():
-    from tatonnement.llm.estimate import estimate, format_estimate
+    from llmarket.llm.estimate import estimate, format_estimate
 
     cfg = fish_cfg(periods=30, sessions=4, agent=dict(provider="deepseek", model="deepseek-flash"))
     cfg["agents"].append(dict(type="llm", provider="qwen", model="qwen-plus"))
@@ -246,7 +246,7 @@ def test_estimate_prices_every_prompt():
 def test_cli_estimate_and_cache_export(tmp_path, capsys):
     import yaml
 
-    from tatonnement.cli import main
+    from llmarket.cli import main
 
     cfg = fish_cfg(periods=5, cache=dict(mode="use", path=str(tmp_path / "c.sqlite")))
     path = tmp_path / "cfg.yaml"
@@ -266,17 +266,17 @@ def test_keys_in_config_are_refused(tmp_path):
 
 
 def test_shipped_example_configs_load_and_the_mock_one_runs():
-    import tatonnement as tt
+    import llmarket as lm
 
-    root = Path(tt.__file__).parent / "experiments"
+    root = Path(lm.__file__).parent / "experiments"
     files = sorted(root.glob("*.yaml"))
     assert {f.stem for f in files} >= {"calvano2020", "fish_style_mock", "dhanda_cap", "fish_style_deepseek",
                                        "qlearning_vs_llm"}
     for f in files:
-        tt.load(f)
-    cfg = tt.load(root / "fish_style_mock.yaml")
+        lm.load(f)
+    cfg = lm.load(root / "fish_style_mock.yaml")
     cfg["periods"] = 5
-    res = tt.run(cfg, out_dir=None, sessions=1)
+    res = lm.run(cfg, out_dir=None, sessions=1)
     assert res["status"] == "complete" and res["llm"]["live_calls"] == 10
 
 

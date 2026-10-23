@@ -3,9 +3,9 @@ from importlib import resources
 
 import pytest
 
-from tatonnement.cli import main
-from tatonnement.core import config as cfgmod
-from tatonnement.core.experiment import run
+from llmarket.cli import main
+from llmarket.core import config as cfgmod
+from llmarket.core.experiment import run
 
 
 def rule_cfg(**over):
@@ -62,7 +62,7 @@ def test_qlearning_engines_agree(engine):
 
 
 def test_builtin_calvano_config_validates(capsys):
-    path = resources.files("tatonnement.experiments") / "calvano2020.yaml"
+    path = resources.files("llmarket.experiments") / "calvano2020.yaml"
     assert main(["validate", str(path)]) == 0
     assert '"conditions": 1' in capsys.readouterr().out
 

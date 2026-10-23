@@ -19,8 +19,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from tatonnement.core.config import load
-from tatonnement.core.experiment import run
+from llmarket.core.config import load
+from llmarket.core.experiment import run
 
 HERE = Path(__file__).resolve().parent
 

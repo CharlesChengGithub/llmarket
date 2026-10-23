@@ -6,8 +6,8 @@ import pytest
 
 pytest.importorskip("numba")
 
-from tatonnement.scenarios.bertrand.qlearning.analysis import analyze
-from tatonnement.scenarios.bertrand.qlearning.fast import prepare, run_session, session_seed
+from llmarket.scenarios.bertrand.qlearning.analysis import analyze
+from llmarket.scenarios.bertrand.qlearning.fast import prepare, run_session, session_seed
 
 GOLDENS = json.loads((Path(__file__).parent / "data" / "paper14_goldens.json").read_text())["goldens"]
 CASES = [(g["condition"], g["config"], s) for g in GOLDENS for s in g["sessions"]]

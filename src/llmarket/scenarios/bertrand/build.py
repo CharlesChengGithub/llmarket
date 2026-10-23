@@ -1,8 +1,8 @@
 """Build Bertrand sessions from configuration mappings.
 
 Market keys: n, a, a0, mu, c, F (fixed cost per period), units {alpha, beta}.
-Agent types: 'rule' (see tatonnement.agents.rule.RULES), 'qlearning', and 'llm' (registered
-by tatonnement.scenarios.bertrand.llm_pricing). Q-learning keys: alpha, beta, beta_rule, nu,
+Agent types: 'rule' (see llmarket.agents.rule.RULES), 'qlearning', and 'llm' (registered
+by llmarket.scenarios.bertrand.llm_pricing). Q-learning keys: alpha, beta, beta_rule, nu,
 delta, k, m, xi, grid, price_map, and pretrain {stable_steps, max_steps, mode: frozen|adaptive}.
 """
 from __future__ import annotations

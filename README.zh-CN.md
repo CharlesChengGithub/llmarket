@@ -1,4 +1,4 @@
-# tatonnement
+# llmarket
 
 面向经济学的多主体模拟工具包：大模型主体、强化学习主体和规则型主体可以在同一个市场里交易。
 
@@ -10,7 +10,7 @@
 
 ## 为什么做这个
 
-研究大模型定价主体的论文增长很快，但多数没有公开代码，公开的也大多是为单篇论文写的一次性脚本。tatonnement 想成为这一领域共用的实验平台，提供以下功能。
+研究大模型定价主体的论文增长很快，但多数没有公开代码，公开的也大多是为单篇论文写的一次性脚本。llmarket 想成为这一领域共用的实验平台，提供以下功能。
 
 - **精确的 Q-learning 基准。** Q-learning 引擎按 session 逐位复现 Calvano 等（2020）的基准实验，并以 Cheng（2026）记录的 1000 个 session 作为验收标准。
 - **各类主体同场竞争。** 大模型、Q-learning 和规则型主体可以同场竞争。Q-learning 主体自我对弈收敛后，可以冻结，也可以继续学习；一个市场里也可以混用不同服务商的模型。
@@ -29,8 +29,8 @@
 ## 安装
 
 ```bash
-git clone https://github.com/CharlesChengGithub/tatonnement.git
-cd tatonnement
+git clone https://github.com/CharlesChengGithub/llmarket.git
+cd llmarket
 pip install -e ".[analysis]"     # pandas/pyarrow 用于输出 parquet（不装就输出 CSV）
 ```
 
@@ -39,43 +39,43 @@ pip install -e ".[analysis]"     # pandas/pyarrow 用于输出 parquet（不装�
 ## 快速上手
 
 ```bash
-tatonnement list                                  # 列出随包提供的实验
+llmarket list                                  # 列出随包提供的实验
 
 # Calvano 等（2020）基准，20 个 session，快速引擎（几秒钟）
-tatonnement run calvano2020 --sessions 20
+llmarket run calvano2020 --sessions 20
 
 # Fish 等结构的两家大模型定价主体，mock 离线回答，零费用
-tatonnement run fish_style_mock
+llmarket run fish_style_mock
 
 # 同一实验用 DeepSeek 要花多少钱？（离线估算，不发送任何请求）
-tatonnement estimate fish_style_deepseek
+llmarket estimate fish_style_deepseek
 ```
 
-`CONFIG` 可以是随包实验的名字，也可以是自己的 YAML 文件路径。写自己的实验时，可以从 `src/tatonnement/experiments/` 里复制一个改。
+`CONFIG` 可以是随包实验的名字，也可以是自己的 YAML 文件路径。写自己的实验时，可以从 `src/llmarket/experiments/` 里复制一个改。
 
 Dhanda（2026）的复现用本地模型，免费：
 
 ```bash
 ollama pull llama3.2:3b        # 先从 https://ollama.com 安装 Ollama；模型约 2 GB
 ollama serve                   # 另开一个终端运行；已打开 Ollama App 时不需要
-tatonnement run dhanda_main    # 表 1：2 个条件 × 12 个 session × 30 期
-tatonnement run dhanda_cap     # 表 2：10 个条件
+llmarket run dhanda_main    # 表 1：2 个条件 × 12 个 session × 30 期
+llmarket run dhanda_cap     # 表 2：10 个条件
 ```
 
 在 Python 中调用：
 
 ```python
-import tatonnement as tt
+import llmarket as lm
 
-res = tt.run("fish_style_mock", out_dir="runs")
+res = lm.run("fish_style_mock", out_dir="runs")
 print(res["conditions"][0]["sessions"][0]["delta"])
 ```
 
 ## 用 YAML 文件描述实验
 
-配置示例见英文 README 或 `src/tatonnement/experiments/` 下的文件。
+配置示例见英文 README 或 `src/llmarket/experiments/` 下的文件。
 
-`sweep` 对列出的参数取笛卡尔积，每种组合是一个条件。设计不是完整笛卡尔积时（例如"中性、激进、中性加上限"三个条件），用 `conditions` 逐个列出有名字的条件，每个条件是一组按点号路径的改动；`conditions` 和 `sweep` 同时出现时，两者交叉。`tatonnement validate FILE` 只检查配置、统计条件数，不运行实验。
+`sweep` 对列出的参数取笛卡尔积，每种组合是一个条件。设计不是完整笛卡尔积时（例如"中性、激进、中性加上限"三个条件），用 `conditions` 逐个列出有名字的条件，每个条件是一组按点号路径的改动；`conditions` 和 `sweep` 同时出现时，两者交叉。`llmarket validate FILE` 只检查配置、统计条件数，不运行实验。
 
 - **市场**（`market`）
   - logit 需求参数：`n`、`a`、`a0`、`mu`、`c`。
@@ -114,19 +114,19 @@ print(res["conditions"][0]["sessions"][0]["delta"])
   - `order`：先列最早还是最近的记录；
   - `own_price`：本方价格显示实际执行价还是提出价。
 - **格式错误**：回答按模板字段切分，再从价格字段里取价格。取哪个数字由 `pick` 决定（在提示词包里设，也可以对单个主体设）：`first` 取第一个数字（`fish_style` 的默认）；`last` 取最后一个；`only` 要求回答只有一个数字，最多带 `Price:`、`$` 或句末句号（`dhanda_style` 的默认）。小模型常常先写一段推理再给价格，这种回答的第一个或最后一个数字往往是成本、上限或对手价格，不是它定的价，所以严格模式宁可重问，也不猜。以下情况视为格式错误：缺字段；价格不是数字，或（`only` 模式下）数字前后还有别的文字；价格为负；价格高于 10 倍垄断价。出错就重问，最多 `retries` 次；仍失败时，`on_failure: stop` 结束该 session（Fish 的做法），`keep_last_price` 沿用上期价格。
-- **缓存**：SQLite 文件，默认 `.tatonnement/cache.sqlite`。键为"请求 + 调用坐标"，坐标包括实验、条件、种子、session、主体、期和第几次尝试。四种模式：
+- **缓存**：SQLite 文件，默认 `.llmarket/cache.sqlite`。键为"请求 + 调用坐标"，坐标包括实验、条件、种子、session、主体、期和第几次尝试。四种模式：
   - `use`（默认）：有缓存就读，没有就调用并写入；
   - `replay`：只读缓存，零费用、精确复现；
   - `refresh`：重新调用并覆盖；
   - `off`：不用缓存。
 
-  中断后用 `use` 模式重跑，已完成的部分不再花钱。`tatonnement cache-export` 把某个实验用到的调用导出成单独文件，可以随复现包一起发布。
+  中断后用 `use` 模式重跑，已完成的部分不再花钱。`llmarket cache-export` 把某个实验用到的调用导出成单独文件，可以随复现包一起发布。
 - **预算**：付费模型必须同时设预算和价目行，否则拒绝调用。每次调用前先估算费用：
   - 会超过预算时，跑完当期就停，状态记为 `budget_stopped`；
   - 会超过预算的 1.2 倍时，立即停止。
 
   内置的 DeepSeek 价格是 2026-10-21 的忙时价，所以记录的费用是上限。
-- **估算**：`tatonnement estimate FILE` 离线模拟几个 session，按真实运行的方式组装每一期的提示词，统计 token 数并给出费用，区间为 ±50%。
+- **估算**：`llmarket estimate FILE` 离线模拟几个 session，按真实运行的方式组装每一期的提示词，统计 token 数并给出费用，区间为 ±50%。
 
 ## 输出
 

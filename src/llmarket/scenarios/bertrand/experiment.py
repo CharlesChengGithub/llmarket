@@ -1,4 +1,4 @@
-"""Hooks used by tatonnement.core.experiment for the Bertrand scenario."""
+"""Hooks used by llmarket.core.experiment for the Bertrand scenario."""
 from __future__ import annotations
 
 from ...core.config import resolved_agents

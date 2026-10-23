@@ -23,7 +23,7 @@ def _scenario(name: str):
 
 
 def _versions() -> dict:
-    out = {"tatonnement": __version__, "python": platform.python_version()}
+    out = {"llmarket": __version__, "python": platform.python_version()}
     for mod in ("numpy", "scipy", "numba", "httpx", "pandas", "pyarrow"):
         try:
             out[mod] = __import__(mod).__version__
@@ -97,7 +97,7 @@ def run(cfg: dict, out_dir: str | Path | None = "runs", sessions: int | None = N
     """Run every condition of cfg; return {'conditions': [...], 'directory': path or None, ...}.
 
     runtime: optional shared objects; {'llm': LLMService} overrides the service built from cfg['llm']
-    (tests and `tatonnement estimate` pass a mock-backed service this way).
+    (tests and `llmarket estimate` pass a mock-backed service this way).
     """
     started = _dt.datetime.now().astimezone()
     n_sessions = int(sessions if sessions is not None else cfg.get("sessions", 1))

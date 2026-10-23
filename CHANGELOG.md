@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 (2026-10-23)
+
+Renamed from tatonnement to llmarket: the package, the import name, the command and the
+repository (github.com/CharlesChengGithub/llmarket; the old address redirects). Environment
+variables starting with `TATONNEMENT_` now start with `LLMARKET_`, and the default cache folder
+is `.llmarket/`; move an existing `.tatonnement/` folder there to keep its cached answers. Nothing
+else changed: results are identical to 0.1.0.
+
 ## 0.1.0 (2026-10-23)
 
 First public release. One scenario, algorithmic pricing in a repeated Bertrand market with

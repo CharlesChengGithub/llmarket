@@ -14,11 +14,11 @@ REQUIRED = ("experiment", "periods", "market", "agents")
 
 
 def builtin_experiments() -> dict[str, str]:
-    """Name -> description of every configuration shipped in tatonnement/experiments."""
+    """Name -> description of every configuration shipped in llmarket/experiments."""
     from importlib import resources
 
     out = {}
-    for f in sorted(resources.files("tatonnement.experiments").iterdir(), key=lambda f: f.name):
+    for f in sorted(resources.files("llmarket.experiments").iterdir(), key=lambda f: f.name):
         if f.name.endswith(".yaml"):
             out[f.name[:-5]] = str(yaml.safe_load(f.read_text()).get("description", ""))
     return out
@@ -33,7 +33,7 @@ def resolve(path: str | Path) -> str:
     if p.parent == Path(".") and name in builtin_experiments():
         from importlib import resources
 
-        return resources.files("tatonnement.experiments").joinpath(f"{name}.yaml").read_text()
+        return resources.files("llmarket.experiments").joinpath(f"{name}.yaml").read_text()
     raise FileNotFoundError(f"{path}: no such file, and not a shipped experiment "
                             f"({', '.join(builtin_experiments())})")
 

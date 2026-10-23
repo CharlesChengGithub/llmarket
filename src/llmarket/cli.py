@@ -1,12 +1,12 @@
 """Command line.
 
-  tatonnement list
-  tatonnement run CONFIG [--out DIR] [--sessions N]
-  tatonnement validate CONFIG
-  tatonnement estimate CONFIG [--sample-sessions N] [--output-tokens N] [--json]
-  tatonnement cache-export --experiment NAME --out FILE [--cache PATH] [--condition NAME]
+  llmarket list
+  llmarket run CONFIG [--out DIR] [--sessions N]
+  llmarket validate CONFIG
+  llmarket estimate CONFIG [--sample-sessions N] [--output-tokens N] [--json]
+  llmarket cache-export --experiment NAME --out FILE [--cache PATH] [--condition NAME]
 
-CONFIG is a YAML file or the name of a shipped experiment (see `tatonnement list`).
+CONFIG is a YAML file or the name of a shipped experiment (see `llmarket list`).
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ import sys
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="tatonnement")
+    parser = argparse.ArgumentParser(prog="llmarket")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("list", help="list the experiments shipped with the package")
     p_run = sub.add_parser("run", help="run an experiment configuration")
@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     p_exp = sub.add_parser("cache-export", help="copy one experiment's LLM calls into a standalone cache file")
     p_exp.add_argument("--experiment", required=True)
     p_exp.add_argument("--out", required=True)
-    p_exp.add_argument("--cache", default=None, help="source cache (default: .tatonnement/cache.sqlite)")
+    p_exp.add_argument("--cache", default=None, help="source cache (default: .llmarket/cache.sqlite)")
     p_exp.add_argument("--condition", default=None)
     args = parser.parse_args(argv)
 

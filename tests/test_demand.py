@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from tatonnement.scenarios.bertrand import Economy, Units, floors_at, make_grid, standard_grid
-from tatonnement.scenarios.bertrand.benchmarks import constrained_benchmarks
+from llmarket.scenarios.bertrand import Economy, Units, floors_at, make_grid, standard_grid
+from llmarket.scenarios.bertrand.benchmarks import constrained_benchmarks
 
 
 @pytest.fixture

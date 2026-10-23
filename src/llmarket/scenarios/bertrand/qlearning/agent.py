@@ -192,7 +192,7 @@ def selfplay(prep: dict, seed: int, alpha: float = 0.15, max_steps: int = 10**9,
 
 
 class QLearningPricer:
-    """Adapter that plugs a :class:`QLearningAgent` into :class:`tatonnement.core.Simulation`."""
+    """Adapter that plugs a :class:`QLearningAgent` into :class:`llmarket.core.Simulation`."""
 
     def __init__(self, core: QLearningAgent, name: str = "qlearning"):
         self.core = core

@@ -1,6 +1,6 @@
 """MockClient: answers in the agent's template with rule-based prices, without any network.
 
-Used by tests, documentation examples and ``tatonnement estimate``. Its randomness is seeded by
+Used by tests, documentation examples and ``llmarket estimate``. Its randomness is seeded by
 the request and the call coordinates, so answers do not depend on call order or threading.
 
 The agent passes a ``hint`` alongside each request (never part of the request itself):

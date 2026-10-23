@@ -4,7 +4,7 @@ Usage: python validation/extract_paper14_goldens.py <paper14_root> [out.json]
 
 Writes, for a fixed list of conditions and sessions, the configuration and the recorded
 seed, steps, last state, last policy change and Delta of each session. tests/test_fast_golden.py
-re-runs these sessions with tatonnement and requires identical results.
+re-runs these sessions with llmarket and requires identical results.
 """
 from __future__ import annotations
 

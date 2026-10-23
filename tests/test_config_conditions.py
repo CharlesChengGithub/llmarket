@@ -1,7 +1,7 @@
 import pytest
 
-from tatonnement.cli import main
-from tatonnement.core.config import builtin_experiments, expand, load, resolved_agents
+from llmarket.cli import main
+from llmarket.core.config import builtin_experiments, expand, load, resolved_agents
 
 BASE = dict(experiment="x", periods=3, market=dict(n=2),
             agents=[dict(type="llm", instructions="neutral"), dict(copy_of=0)])

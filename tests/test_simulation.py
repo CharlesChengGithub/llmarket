@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from tatonnement.agents.rule import FixedPrice, GrimTrigger, RandomPrice, TitForTat, Undercut
-from tatonnement.core.simulation import Simulation
-from tatonnement.core.types import Action
-from tatonnement.scenarios.bertrand import Economy
-from tatonnement.scenarios.bertrand.env import BertrandEnv
-from tatonnement.scenarios.bertrand.regulations import PriceCap, PriceFloor
+from llmarket.agents.rule import FixedPrice, GrimTrigger, RandomPrice, TitForTat, Undercut
+from llmarket.core.simulation import Simulation
+from llmarket.core.types import Action
+from llmarket.scenarios.bertrand import Economy
+from llmarket.scenarios.bertrand.env import BertrandEnv
+from llmarket.scenarios.bertrand.regulations import PriceCap, PriceFloor
 
 
 def calvano(n=2):

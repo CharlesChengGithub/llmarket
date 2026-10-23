@@ -1,4 +1,4 @@
-# tatonnement
+# llmarket
 
 An agent-based simulation toolkit built for economics: LLM agents, reinforcement learners
 and rule-based agents can trade in the same market.
@@ -14,7 +14,7 @@ Status: v0.1, an early release. Install from GitHub; not yet on PyPI.
 ## Why
 
 Research on LLM pricing agents is growing quickly, but most of its code is either missing or
-written once for a single paper. tatonnement aims to be a shared experimental platform for
+written once for a single paper. llmarket aims to be a shared experimental platform for
 this work. It offers:
 
 - **Exact Q-learning baselines.** The Q-learning engine reproduces the Calvano et al. (2020)
@@ -43,8 +43,8 @@ this work. It offers:
 ## Install
 
 ```bash
-git clone https://github.com/CharlesChengGithub/tatonnement.git
-cd tatonnement
+git clone https://github.com/CharlesChengGithub/llmarket.git
+cd llmarket
 pip install -e ".[analysis]"     # pandas/pyarrow write parquet output (CSV without them)
 ```
 
@@ -53,36 +53,36 @@ Python 3.10 or newer. The core needs numpy, scipy, numba, httpx and pyyaml.
 ## Quick start
 
 ```bash
-tatonnement list                                  # the experiments shipped with the package
+llmarket list                                  # the experiments shipped with the package
 
 # Calvano et al. (2020) baseline, 20 sessions, on the fast engine (a few seconds)
-tatonnement run calvano2020 --sessions 20
+llmarket run calvano2020 --sessions 20
 
 # Two LLM pricing agents with the Fish et al. structure, offline mock answers, no cost
-tatonnement run fish_style_mock
+llmarket run fish_style_mock
 
 # What would the same experiment cost on DeepSeek? (offline; nothing is sent)
-tatonnement estimate fish_style_deepseek
+llmarket estimate fish_style_deepseek
 ```
 
 `CONFIG` can be the name of a shipped experiment or the path to your own YAML file. To start
-your own, copy one of the files in `src/tatonnement/experiments/`.
+your own, copy one of the files in `src/llmarket/experiments/`.
 
 The Dhanda (2026) replications run free on a local model:
 
 ```bash
 ollama pull llama3.2:3b        # Ollama from https://ollama.com, about 2 GB
 ollama serve                   # in another terminal, unless the Ollama app is running
-tatonnement run dhanda_main    # Table 1: 2 conditions x 12 sessions x 30 rounds
-tatonnement run dhanda_cap     # Table 2: 10 conditions
+llmarket run dhanda_main    # Table 1: 2 conditions x 12 sessions x 30 rounds
+llmarket run dhanda_cap     # Table 2: 10 conditions
 ```
 
 From Python:
 
 ```python
-import tatonnement as tt
+import llmarket as lm
 
-res = tt.run("fish_style_mock", out_dir="runs")
+res = lm.run("fish_style_mock", out_dir="runs")
 print(res["conditions"][0]["sessions"][0]["delta"])
 ```
 
@@ -122,7 +122,7 @@ conditions:
                          text: "It is ILLEGAL to set a price above {cap:.2f}."}]}
 ```
 
-`tatonnement validate FILE` checks a file and counts its conditions without running anything.
+`llmarket validate FILE` checks a file and counts its conditions without running anything.
 
 ### Market
 
@@ -208,7 +208,7 @@ agents:
 - `dhanda_style` reconstructs the setting described by Dhanda (2026): cost, a legal range of
   [1.0, 2.5], the competitive logic, the last five rounds, and a single-number answer. The
   paper does not print its prompt, so the wording is ours. The condition sentences it quotes
-  are available verbatim in `tatonnement.scenarios.bertrand.prompts` (CC BY 4.0).
+  are available verbatim in `llmarket.scenarios.bertrand.prompts` (CC BY 4.0).
 
 Any pack can be replaced by your own templates.
 
@@ -246,7 +246,7 @@ session (as in Fish et al.), and `on_failure: keep_last_price` repeats the last 
 
 ### Cache, budget, estimates
 
-- **Cache** (`llm.cache`, SQLite, default `.tatonnement/cache.sqlite`). Each call is keyed by
+- **Cache** (`llm.cache`, SQLite, default `.llmarket/cache.sqlite`). Each call is keyed by
   the request together with its coordinates (experiment, condition, seed, session, agent,
   period, attempt). The modes are:
   - `use`: return the cached answer if there is one, otherwise call and store it (default);
@@ -255,7 +255,7 @@ session (as in Fish et al.), and `on_failure: keep_last_price` repeats the last 
   - `off`: no caching.
 
   To rerun an interrupted experiment at no extra cost, run it again in `use` mode.
-  `tatonnement cache-export --experiment NAME --out calls.sqlite` writes one experiment's
+  `llmarket cache-export --experiment NAME --out calls.sqlite` writes one experiment's
   calls to a file that others can replay offline.
 - **Budget** (`llm.budget {amount, currency}`). Paid models need both a budget and a price row
   (`llm/prices.yaml`, or your own rows under `llm.prices`); otherwise the call is refused.
@@ -266,7 +266,7 @@ session (as in Fish et al.), and `on_failure: keep_last_price` repeats the last 
 
   The shipped DeepSeek prices are peak-hour rates as of 2026-10-21, so recorded costs are
   upper bounds.
-- **Estimates** (`tatonnement estimate FILE`). This simulates a few sessions offline, builds
+- **Estimates** (`llmarket estimate FILE`). This simulates a few sessions offline, builds
   every prompt exactly as a live run would, and prices the token counts, with a ±50% range.
 
 ## Outputs

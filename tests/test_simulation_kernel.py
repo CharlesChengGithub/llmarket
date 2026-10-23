@@ -4,16 +4,16 @@ import pytest
 
 pytest.importorskip("numba")
 
-from tatonnement.core.record import Recorder
-from tatonnement.core.simulation import Simulation
-from tatonnement.scenarios.bertrand.env import BertrandEnv
-from tatonnement.scenarios.bertrand.qlearning.agent import (
+from llmarket.core.record import Recorder
+from llmarket.core.simulation import Simulation
+from llmarket.scenarios.bertrand.env import BertrandEnv
+from llmarket.scenarios.bertrand.qlearning.agent import (
     QLearningAgent,
     QLearningPricer,
     kernel_initial,
 )
-from tatonnement.scenarios.bertrand.qlearning.fast import prepare, run_session, session_seed
-from tatonnement.scenarios.bertrand.regulations import PriceFloor
+from llmarket.scenarios.bertrand.qlearning.fast import prepare, run_session, session_seed
+from llmarket.scenarios.bertrand.regulations import PriceFloor
 
 
 @pytest.mark.parametrize("cfg,regs", [

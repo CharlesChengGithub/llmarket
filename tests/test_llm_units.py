@@ -5,14 +5,14 @@ import json
 import httpx
 import pytest
 
-from tatonnement.llm.cache import Cache
-from tatonnement.llm.client import OpenAICompatibleClient
-from tatonnement.llm.ledger import Ledger, PriceRow, PriceTable
-from tatonnement.llm.mock import MockClient
-from tatonnement.llm.parsing import parse_price, split_sections
-from tatonnement.llm.providers import PROVIDERS, Provider, resolve
-from tatonnement.llm.service import LLMService
-from tatonnement.llm.types import (
+from llmarket.llm.cache import Cache
+from llmarket.llm.client import OpenAICompatibleClient
+from llmarket.llm.ledger import Ledger, PriceRow, PriceTable
+from llmarket.llm.mock import MockClient
+from llmarket.llm.parsing import parse_price, split_sections
+from llmarket.llm.providers import PROVIDERS, Provider, resolve
+from llmarket.llm.service import LLMService
+from llmarket.llm.types import (
     BudgetExceeded,
     CacheMiss,
     CallCoords,

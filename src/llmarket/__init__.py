@@ -1,6 +1,6 @@
-"""tatonnement: economics-first agent-based simulation with LLM, learning and rule-based agents."""
+"""llmarket: economics-first agent-based simulation with LLM, learning and rule-based agents."""
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 def load(path):

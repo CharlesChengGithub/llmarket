@@ -61,7 +61,7 @@ class PriceRow:
 
 
 def default_rows() -> list[PriceRow]:
-    text = resources.files("tatonnement.llm").joinpath("prices.yaml").read_text()
+    text = resources.files("llmarket.llm").joinpath("prices.yaml").read_text()
     return [PriceRow.from_dict(d) for d in yaml.safe_load(text)]
 
 
@@ -106,7 +106,7 @@ class Ledger:
                 r = PriceRow(provider.name, "*", None, 0.0, 0.0, 0.0, source="unpaid provider")
             else:
                 raise UnknownPrice(f"no price row for {provider.name}/{model}; add one under llm.prices "
-                                   "(see tatonnement/llm/prices.yaml for the format)")
+                                   "(see llmarket/llm/prices.yaml for the format)")
         if not r.free:
             if self.budget is None:
                 raise UnknownPrice(f"{provider.name}/{model} is a paid model: set llm.budget.amount")

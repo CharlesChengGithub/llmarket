@@ -4,8 +4,8 @@ import pytest
 
 pytest.importorskip("numba")
 
-from tatonnement.scenarios.bertrand.qlearning.agent import QLearningAgent, selfplay, to_index
-from tatonnement.scenarios.bertrand.qlearning.fast import prepare, run_session
+from llmarket.scenarios.bertrand.qlearning.agent import QLearningAgent, selfplay, to_index
+from llmarket.scenarios.bertrand.qlearning.fast import prepare, run_session
 
 CONFIGS = {
     "baseline": {},

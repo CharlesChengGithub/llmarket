@@ -38,7 +38,7 @@ class PromptPack:
     system: str | None = None
     fields: list = field(default_factory=list)
     price_field: str | None = None
-    pick: str = "first"  # which number is the price: first | last | only (see tatonnement.llm.parsing)
+    pick: str = "first"  # which number is the price: first | last | only (see llmarket.llm.parsing)
     memory_fields: list = field(default_factory=list)
     memory_labels: dict = field(default_factory=dict)
     prefixes: dict = field(default_factory=dict)
@@ -105,7 +105,7 @@ FISH_STYLE = PromptPack(
     window=100,
     labels={"price": "My price", "rival": "Competitor's price", "rivals": "Competitors' prices",
             "quantity": "My quantity sold", "profit": "My profit"},
-    source="Structure after Fish, Gonczarowski and Shorrer (2024); wording by tatonnement.",
+    source="Structure after Fish, Gonczarowski and Shorrer (2024); wording by llmarket.",
 )
 
 DHANDA_INSTRUCTIONS = {
@@ -138,7 +138,7 @@ DHANDA_STYLE = PromptPack(
     price_range=(1.0, 2.5),
     labels={"price": "your price", "rival": "rival's price", "rivals": "rivals' prices", "profit": "your profit",
             "quantity": "units sold"},
-    source="Reconstructed from the description in Dhanda (2026), CC BY 4.0; wording by tatonnement.",
+    source="Reconstructed from the description in Dhanda (2026), CC BY 4.0; wording by llmarket.",
 )
 
 PACKS = {p.name: p for p in (FISH_STYLE, DHANDA_STYLE)}

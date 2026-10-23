@@ -1,8 +1,8 @@
-# Fish-style duopoly with a paid model. Run `tatonnement estimate` first; spending stops at the
+# Fish-style duopoly with a paid model. Run `llmarket estimate` first; spending stops at the
 # budget (checked before every call; the session ends after the current period).
 # Needs the environment variable DEEPSEEK_API_KEY.
 experiment: fish_style_deepseek
-description: "Fish et al. (2024) structure on DeepSeek (paid; run `tatonnement estimate` first)"
+description: "Fish et al. (2024) structure on DeepSeek (paid; run `llmarket estimate` first)"
 sessions: 3
 periods: 300
 seed: 20261021
