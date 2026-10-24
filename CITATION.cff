@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use llmarket in your research, please cite it as below."
 title: "llmarket: economics-first agent-based simulation with LLM, reinforcement-learning and rule-based agents"
-version: 0.1.1
+version: 0.1.2
 license: MIT
 type: software
 repository-code: "https://github.com/CharlesChengGithub/llmarket"

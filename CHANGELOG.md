@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 (2026-10-24)
+
+LLM pricing agents can show the price they submitted next to the sale price: add `submitted` to a
+pack's `history_fields`. The two differ when a price bound or regulation changes the submitted
+price, so the agent can see that it happened. The shipped packs are unchanged, and results are
+identical to 0.1.1.
+
 ## 0.1.1 (2026-10-23)
 
 Renamed from tatonnement to llmarket: the package, the import name, the command and the

@@ -21,7 +21,7 @@ from ...llm.service import LLMService
 from .build import register_agent
 from .prompts import DHANDA_INSTRUCTIONS, PromptPack, get_pack
 
-HISTORY_FIELDS = ("price", "rivals", "quantity", "profit")
+HISTORY_FIELDS = ("price", "submitted", "rivals", "quantity", "profit")  # submitted: own proposed price
 
 
 @dataclass
@@ -134,7 +134,8 @@ class PricingLLMAgent(LLMAgent):
         rows = []
         for t in range(start, T):
             rivals = np.delete(h["posted"][t], i) * self.alpha
-            rows.append(dict(round=t + 1, price=h[own_key][t][i] * self.alpha, rivals=rivals,
+            rows.append(dict(round=t + 1, price=h[own_key][t][i] * self.alpha,
+                             submitted=h["proposed"][t][i] * self.alpha, rivals=rivals,
                              quantity=h["quantity"][t][i] * self.beta,
                              profit=h["profit"][t][i] * self.alpha * self.beta))
         if self.deployment.history == "summary":

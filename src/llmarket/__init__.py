@@ -1,6 +1,6 @@
 """llmarket: economics-first agent-based simulation with LLM, learning and rule-based agents."""
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 def load(path):
